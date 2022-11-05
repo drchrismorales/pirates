@@ -36,13 +36,11 @@ class CrewMate:
 		self.sick = flag
 
 	def start_day (self, ship):
+        ship.take_food (self.get_hunger())
 		if (self.sick):
-			ship.take_food (3)
 			self.health = self.health - 1
 			if (random.randint(1,10) == 1):
 				self.sick = False
-		else:
-			ship.take_food (1)
 
 	def print (self):
 		if (self.sick):
