@@ -1,0 +1,112 @@
+Playlist:
+https://www.youtube.com/playlist?list=PLamOaLb5n_9ivJZwFCIe8RGZ5T6UZNzo9
+
+12) whirlpool location / revise map directions
+https://youtu.be/r0uxSTdIZMc
+        tilted
+	    - changed ship headings to appear intuitive
+	whirlpool location
+	    - player choose to stay or flee
+	    - revised locations to have reference to the world
+
+11) islands / map
+https://youtu.be/xYFvNBVIXWw
+        islands # places for interaction
+	map allow player to see what is around
+
+10) win condition
+https://youtu.be/hbElOBSRB9Q
+       player gets to a certain location
+       # quest, pieces
+
+
+9) unit testing
+https://youtu.be/7vmOs2M0dew
+       where to put the tests 
+       how to run
+       project <---- run the tests from this directory
+            rungame.py
+            game
+	       files.....
+	    test
+	       __init__
+	       test_player.py
+	       test files
+	
+
+8) save / load game state
+https://youtu.be/1VJmuuyxaSc
+       jsonpickle library 
+           - serialize data
+	   - one object - player object ( make use of global objects )
+
+
+7) interaction
+https://youtu.be/rv44BDUw_lA
+        more nouns and more verbs
+	      crewmembers
+	      give medicine to crewmember
+	      chase / feed seagulls
+
+6) interaction
+https://youtu.be/qL2_GkmPxhM
+        commands
+	     north
+	     south
+	     east
+	     # give medicine to crewmember
+	     # chase seagull
+	     # feed seagull
+
+
+	nouns, verbs
+	player being in contexts, contexts will have verbs/nouns
+                world
+		locations
+		ship
+		# crewmembers
+		# seagulls	
+
+5) events
+https://youtu.be/NsOONb39IMI
+	event list - can modified over time, and the number of occurrences of an event in the list
+	             reflects its probability
+
+	events as encounter ( user interaction with these events)
+	     game/events/seagull.py - an encounter with persistent state
+	     game/events/nothing.py    - nothing happened
+
+4) events
+https://youtu.be/f2xcfZybp0k
+        predictable events
+	     - start day
+	          - hunger
+	     - end day
+	     - enter location
+	unpredictable
+	     game/event.py   - have Event classes
+	     game/events     - directory of events
+	     game/events/sickness.py - a crew member gets sick
+	     game/events/lucky.py    - a crew member feels lucky
+
+3) game loop
+https://youtu.be/fhB7xhsPqFE
+	how user interacts with the game
+	world works, major events
+
+
+2) world and locations
+https://youtu.be/xifRFLlev6Y
+	added movement for ship
+	decomposed the day processing into start, day, end, and enter
+        game/location.py
+
+1) basic objects 
+https://youtu.be/NVC6t14NKZk
+	rungame.py - script to start game
+	game/__init__.py - holds list of game classes
+	game/player.py 
+	game/world.py  
+	game/ship.py
+	game/crewmate.py
+      
