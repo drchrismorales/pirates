@@ -67,7 +67,7 @@ class Player (Context):
 				elif (cmd_list[1] == "east"):
 					self.ship.process_verb ("east", cmd_list, nouns)
 		else:
-			print ("Error: Player object doe not understand verb " + verb)
+			print ("Error: Player object does not understand verb " + verb)
 			pass
 
 	@staticmethod
