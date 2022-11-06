@@ -51,7 +51,7 @@ class Whirlpool (Context, location.Location):
 
 		elif (verb == "stay"):
 			if (random.randint(1,2) == 1):
-				Player.the_player.nd = False
+				Player.the_player.gameInProgress = False
 				print ("the ship was destroyed in the whirlpool")
 			else:
 				print ("the ship is somehow holding together")

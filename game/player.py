@@ -13,7 +13,7 @@ class Player (Context):
 		Player.the_player = self
 		self.sight_range = 3
 		self.name = 'Player'
-		self.nd = True
+		self.gameInProgress = True
 		self.ship = ship
 		self.world = world
 		self.reporting = True
@@ -35,7 +35,7 @@ class Player (Context):
 
 	def process_verb (self, verb, cmd_list, nouns):
 		if (verb == "quit"):
-			self.nd = False
+			self.gameInProgress = False
 			self.go = True
 		elif (verb == "map"):
 			self.print_map ()
@@ -120,7 +120,7 @@ class Player (Context):
 			self.ship.print ()
 
 		if (self.ship.get_food()<0):
-			self.nd = False
+			self.gameInProgress = False
 			print (" everyone starved!!!!!!!!!! ")
 			return
 
@@ -130,10 +130,10 @@ class Player (Context):
 
 
 	def notdone (self):
-		return self.nd
+		return self.gameInProgress
 
 	def times_up (self):
-		self.nd = False
+		self.gameInProgress = False
 
 	def print (self):
 		self.ship.print()

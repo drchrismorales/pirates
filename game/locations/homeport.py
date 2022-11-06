@@ -10,5 +10,5 @@ class HomePort (location.Location):
 		self.symbol = 'H'
 
 	def enter (self, ship):
-		Player.the_player.nd = False
+		Player.the_player.gameInProgress = False
 		print ("congratulations you've reached home and won")
