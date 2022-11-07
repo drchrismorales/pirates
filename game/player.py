@@ -12,7 +12,7 @@ class Player (Context):
     def __init__ (self, world, ship):
         super().__init__()
         Player.the_player = self
-        self.sight_range = 3
+        self.sight_range = 2
         self.name = 'Player'
         self.gameInProgress = True
         self.ship = ship
@@ -105,8 +105,8 @@ class Player (Context):
         ship_loc = self.ship.get_loc()
         x = ship_loc.get_x()
         y = ship_loc.get_y()
-        for ix in range (x-self.sight_range, x+self.sight_range):
-            for iy in range (y-self.sight_range, y+self.sight_range):
+        for ix in range (x-self.sight_range, x+self.sight_range+1):
+            for iy in range (y-self.sight_range, y+self.sight_range+1):
                 if ((ix >=0) and (ix < self.world.worldsize) and (iy >=0) and (iy < self.world.worldsize)):
                     self.seen[ix][iy] = True
 
