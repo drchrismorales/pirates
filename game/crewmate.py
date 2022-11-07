@@ -28,7 +28,6 @@ class CrewMate:
         self.health = self.health - num
 
     def get_hunger (self):
-
         if (self.sick):
             return 3
         return 1

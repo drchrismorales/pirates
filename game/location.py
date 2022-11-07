@@ -19,7 +19,6 @@ class Location:
 
     def enter(self, ship):
         pass
-        #print("ship entering " + str(self.x) + ", " + str(self.y))
     def start_day(self):
         pass
     def end_day(self):
