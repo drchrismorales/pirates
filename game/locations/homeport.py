@@ -1,6 +1,7 @@
 
 from game import location
 from game.player import Player
+from game.display import announce
 
 class HomePort (location.Location):
 
@@ -11,4 +12,4 @@ class HomePort (location.Location):
 
     def enter (self, ship):
         Player.the_player.gameInProgress = False
-        print ("congratulations you've reached home and won")
+        announce ("congratulations you've reached home and won")

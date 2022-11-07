@@ -3,6 +3,7 @@ from re import I
 from game.ship import *
 from game.context import Context
 import jsonpickle
+from game.display import announce
 
 class Player (Context):
 
@@ -40,14 +41,14 @@ class Player (Context):
         elif (verb == "map"):
             self.print_map ()
         elif (verb == "debug"):
-            print ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
+            announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
         elif (verb == "save"):
-            print ("saving...", end="")
+            announce ("saving...", end="",pause=False)
             f = open ("save.json", "w")
             f.write (jsonpickle.encode (self))
             f.close()
-            print ("..done")
+            announce ("..done")
         elif (verb == "load"):
             with open ("save.json") as f:
                 s = f.read()    
@@ -67,7 +68,7 @@ class Player (Context):
                 elif (cmd_list[1] == "east"):
                     self.ship.process_verb ("east", cmd_list, nouns)
         else:
-            print ("Error: Player object does not understand verb " + verb)
+            announce ("Error: Player object does not understand verb " + verb)
             pass
 
     @staticmethod
@@ -92,7 +93,7 @@ class Player (Context):
         if (cmd_list[0] in verbs.keys()):
             verbs[cmd_list[0]].process_verb (cmd_list[0], cmd_list, nouns)
         else:
-            print (" I did not understand that command of " + cmd_list[0])
+            announce (" I did not understand that command of " + cmd_list[0])
 
 
 
@@ -112,16 +113,16 @@ class Player (Context):
         self.go = False
 
         if (self.reporting):
-            print ("Captain's Log: Day " + str(self.world.get_day()))
-            print ("The ship is at location ", end="")
+            announce ("Captain's Log: Day " + str(self.world.get_day()),pause=False)
+            announce ("The ship is at location ", end="",pause=False)
             loc = self.ship.get_loc()
-            print (str(loc.get_x()) + ", " + str(loc.get_y()))
-            print ("Food stores are at: " + str (self.ship.get_food()))
+            announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
+            announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
             self.ship.print ()
 
         if (self.ship.get_food()<0):
             self.gameInProgress = False
-            print (" everyone starved!!!!!!!!!! ")
+            announce (" everyone starved!!!!!!!!!! ")
             return
 
         
@@ -155,3 +156,4 @@ class Player (Context):
                 else:
                     print ("?", end="")
             print ()
+

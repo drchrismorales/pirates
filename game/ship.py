@@ -3,6 +3,7 @@ import random
 from game.crewmate import *
 from game.location import *
 from game.context import Context
+from game.display import announce
 
 class Ship (Context):
 
@@ -52,9 +53,9 @@ class Ship (Context):
                         nouns[cmd_list[3]].receive_medicine(1)
                         self.medicine =  self.medicine - 1
                     else:
-                        print ("no more medicine to give")
+                        announce ("no more medicine to give")
         else:
-            print ("Error: Ship object doe not understand verb " + verb)
+            announce ("Error: Ship object doe not understand verb " + verb)
 
 
     def print (self):
