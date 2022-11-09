@@ -26,17 +26,17 @@ class Ship (Context):
 
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "north"):
-            self.hx = -1
-            self.hy = 0
-        elif (verb == "south"):
-            self.hx = 1
-            self.hy = 0
-        elif (verb == "east"):
-            self.hx = 0
-            self.hy = 1
-        elif (verb == "west"):
             self.hx = 0
             self.hy = -1
+        elif (verb == "south"):
+            self.hx = 0
+            self.hy = 1
+        elif (verb == "east"):
+            self.hx = 1
+            self.hy = 0
+        elif (verb == "west"):
+            self.hx = -1
+            self.hy = 0
         elif (verb == "anchor"):
             self.hx = 0
             self.hy = 0
@@ -61,13 +61,12 @@ class Ship (Context):
             print ("ship heading is east")
         elif ((self.hx == -1) and (self.hy == 0)):
             print ("ship heading is west")
-        elif ((self.hx == 0) and (self.hy == 1)):
-            print ("ship heading is north")
         elif ((self.hx == 0) and (self.hy == -1)):
+            print ("ship heading is north")
+        elif ((self.hx == 0) and (self.hy == 1)):
             print ("ship heading is south")
 
         print ("ship has " + str (self.medicine) + " medicine")
-
 
     def get_loc (self):
         return self.loc

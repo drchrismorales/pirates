@@ -8,7 +8,6 @@ import game.config as config
 
 class Player (Context):
 
-
     def __init__ (self, world, ship):
         super().__init__()
         config.the_player = self
@@ -20,6 +19,7 @@ class Player (Context):
         self.reporting = True
         self.go = False
         self.pirates = []
+        self.piscine_dormitory = []
         n = random.randrange(3,7)
         for i in range (0,n):
             c = CrewMate()
@@ -129,7 +129,8 @@ class Player (Context):
 
         if (self.ship.get_food()<0):
             self.gameInProgress = False
-            announce (" everyone starved!!!!!!!!!! ")
+            announce (" everyone starved!!!!!!!!!!")
+            config.the_player.kill_all_pirates("died of sudden-onset starvation")
             return
 
         
@@ -138,6 +139,7 @@ class Player (Context):
 
 
     def notdone (self):
+        self.cleanup_pirates ()
         return self.gameInProgress
 
     def times_up (self):
@@ -158,10 +160,29 @@ class Player (Context):
     def get_pirates (self):
         return [p for p in self.pirates if p.health > 0]
 
+    def cleanup_pirates (self):
+        i = 0
+        while i < len(self.pirates):
+            if (self.pirates[i].health <= 0):
+                deader = self.pirates.pop(i)
+                self.piscine_dormitory.append(deader)
+            else:
+                i = i + 1
+        if (len(self.pirates) <= 0):
+            announce (" everyone died!!!!!!!!!!")
+            self.gameInProgress = False
+
+    def kill_all_pirates (self, deathcause):
+        while len(self.pirates) > 0:
+            deader = self.pirates.pop()
+            if(deader.death_cause != ""):
+                deader.death_cause = deathcause
+            self.piscine_dormitory.append(deader)
+
     def print_map (self):
         ship_loc = self.ship.get_loc()
-        for x in range (0, self.world.worldsize):
-            for y in range (0, self.world.worldsize):
+        for y in range (0, self.world.worldsize):
+            for x in range (0, self.world.worldsize):
                 if (self.world.locs[x][y] == ship_loc):
                     print ("S", end="")
                 elif (self.seen[x][y]):

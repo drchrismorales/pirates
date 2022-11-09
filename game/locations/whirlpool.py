@@ -53,9 +53,10 @@ class Whirlpool (Context, location.Location):
         elif (verb == "stay"):
             if (random.randint(1,2) == 1):
                 config.the_player.gameInProgress = False
-                print ("the ship was destroyed in the whirlpool")
+                config.the_player.kill_all_pirates("Drowned in the whirlpool")
+                print ("The ship was destroyed in the whirlpool")
             else:
-                print ("the ship is somehow holding together")
+                print ("The ship is somehow holding together")
             self.go = True
     
     def start_day (self):

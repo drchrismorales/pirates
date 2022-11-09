@@ -21,13 +21,18 @@ class Seagull (Context, event.Event):
             self.go = True
             r = random.randint(1,10)
             if (r < 5):
-                self.result["message"] = "the seagulls fly off " + str (r)
+                self.result["message"] = "the seagulls fly off."
                 if (self.seagulls > 1):
                     self.seagulls = self.seagulls - 1
             else:
-                c = random.choice(nouns["world"].get_ship().get_crew())
-                c.inflict_damage (self.seagulls)
-                self.result["message"] = c.get_name() + " is attacked by the seagulls " + str (r)
+                c = random.choice(config.the_player.get_pirates())
+                if (c.lucky == True):
+                    self.result["message"] = "luckly, the seagulls fly off."
+                else:
+                    self.result["message"] = c.get_name() + " is attacked by the seagulls."
+                    if (c.inflict_damage (self.seagulls, "Pecked to death by seagulls")):
+                        self.result["message"] = ".. " + c.get_name() + " is pecked to death by the seagulls!"
+
         elif (verb == "feed"):
             self.seagulls = self.seagulls + 1
             self.result["newevents"].append (Seagull())
