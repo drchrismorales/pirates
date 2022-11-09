@@ -1,6 +1,7 @@
 
 from game import event
 import random
+import game.config as config
 
 class LuckyDay (event.Event):
 
@@ -10,7 +11,7 @@ class LuckyDay (event.Event):
     def process (self, world):
         # choose a lucky crew member
         
-        c = random.choice(world.get_ship().get_crew())
+        c = random.choice(config.the_player.get_pirates())
         msg = c.get_name() + " is having a lucky day"
         result = {}
         result["message"] = msg

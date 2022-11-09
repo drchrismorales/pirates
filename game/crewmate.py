@@ -41,7 +41,12 @@ class CrewMate:
         ship.take_food (self.get_hunger())
         if (self.sick):
             self.health = self.health - 1
-            if (random.randint(1,10) == 1):
+            if(self.health <= 0):
+                announce(self.name + " has died of their illness!")
+
+    def end_day (self):
+        if (self.sick):
+            if (self.lucky == True or random.randint(1,10) == 1):
                 self.sick = False
 
     def print (self):

@@ -4,6 +4,7 @@ from game.crewmate import *
 from game.location import *
 from game.context import Context
 from game.display import announce
+import game.config as config
 
 class Ship (Context):
 
@@ -12,14 +13,8 @@ class Ship (Context):
         self.hx = 0
         self.hy = 0
         self.medicine = 5
-        self.crew = []
         self.food = 100
         self.loc = None
-        n = random.randrange(3,7)
-        for i in range (0,n):
-            c = CrewMate()
-            self.crew.append (c)
-            self.nouns[c.get_name()] = c
 
         self.verbs['anchor'] = self
         self.verbs['north'] = self
@@ -73,8 +68,6 @@ class Ship (Context):
 
         print ("ship has " + str (self.medicine) + " medicine")
 
-        for crew in self.crew:
-            crew.print()
 
     def get_loc (self):
         return self.loc
@@ -83,18 +76,17 @@ class Ship (Context):
         self.loc = loc
 
     def start_day (self, world):
-        # crew members eat
-        for crew in self.crew:
+        # crew members eat, and possibly die of illnesses
+        i = 0
+        for crew in config.the_player.get_pirates():
             crew.start_day (self)
 
     def get_food (self):
         return self.food
 
     def take_food (self, amt):
+        return None
         self.food = self.food - amt
-
-    def get_crew (self):
-        return self.crew
 
     def end_day (self, world):
 
@@ -107,3 +99,6 @@ class Ship (Context):
 
             # tell the new location that we entered
             new_loc.enter(self)
+
+        for crew in config.the_player.get_pirates():
+            crew.end_day ()

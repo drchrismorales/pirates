@@ -1,6 +1,7 @@
 
 from game import event
 import random
+import game.config as config
 
 class Sickness(event.Event):
 
@@ -8,7 +9,7 @@ class Sickness(event.Event):
         self.name = " a random crew member gets sick "
 
     def process (self, world):
-        c = random.choice(world.get_ship().get_crew())
+        c = random.choice(config.the_player.get_pirates())
         c.set_sickness (True)
         result = {}
         result["message"] = c.get_name() + " has gotten sick"

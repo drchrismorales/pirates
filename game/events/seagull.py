@@ -1,6 +1,7 @@
 from game import event
 from game.player import Player
 from game.context import Context
+import game.config as config
 import random
 
 class Seagull (Context, event.Event):
@@ -51,6 +52,6 @@ class Seagull (Context, event.Event):
 
         while (self.go == False):
             print (str (self.seagulls) + " seagulls has appeared what do you want to do?")
-            Player.get_interaction ([self, world, world.ship, Player.the_player])
+            Player.get_interaction ([self, world, world.ship, config.the_player])
 
         return self.result

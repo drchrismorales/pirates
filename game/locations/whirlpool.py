@@ -4,6 +4,7 @@
 from game import location
 from game.context import Context
 from game.player import Player
+import game.config as config
 
 import random
 
@@ -51,7 +52,7 @@ class Whirlpool (Context, location.Location):
 
         elif (verb == "stay"):
             if (random.randint(1,2) == 1):
-                Player.the_player.gameInProgress = False
+                config.the_player.gameInProgress = False
                 print ("the ship was destroyed in the whirlpool")
             else:
                 print ("the ship is somehow holding together")

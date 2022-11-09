@@ -4,14 +4,14 @@ from game.ship import *
 from game.context import Context
 import jsonpickle
 from game.display import announce
+import game.config as config
 
 class Player (Context):
 
-    the_player = None
 
     def __init__ (self, world, ship):
         super().__init__()
-        Player.the_player = self
+        config.the_player = self
         self.sight_range = 2
         self.name = 'Player'
         self.gameInProgress = True
@@ -19,6 +19,13 @@ class Player (Context):
         self.world = world
         self.reporting = True
         self.go = False
+        self.pirates = []
+        n = random.randrange(3,7)
+        for i in range (0,n):
+            c = CrewMate()
+            self.pirates.append (c)
+            self.nouns[c.get_name()] = c
+
         self.verbs['quit'] = self
         self.verbs['status'] = self
         self.verbs['go'] = self
@@ -52,7 +59,7 @@ class Player (Context):
         elif (verb == "load"):
             with open ("save.json") as f:
                 s = f.read()    
-            Player.the_player = jsonpickle.decode (s)
+            config.the_player = jsonpickle.decode (s)
             self.go = True
         elif (verb == "status"):
             self.print()
@@ -138,12 +145,18 @@ class Player (Context):
 
     def print (self):
         self.ship.print()
+        for crew in self.get_pirates():
+            crew.print()
+
 
     def get_ship (self):
         return self.ship
 
     def get_world(self):
         return self.world
+
+    def get_pirates (self):
+        return [p for p in self.pirates if p.health > 0]
 
     def print_map (self):
         ship_loc = self.ship.get_loc()

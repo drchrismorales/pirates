@@ -14,9 +14,9 @@ ship_v.set_loc (start_loc)
 
 player_v   = player.Player(world_v, ship_v)
 
-while (player.Player.the_player.notdone()):
-    player.Player.the_player.get_world().start_day ()
-    player.Player.the_player.process_day()
-    player.Player.the_player.get_world().end_day ()
+while (config.the_player.notdone()):
+    config.the_player.get_world().start_day ()
+    config.the_player.process_day()
+    config.the_player.get_world().end_day ()
 
 # world_v.print()

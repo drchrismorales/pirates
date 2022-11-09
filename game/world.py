@@ -5,6 +5,7 @@ from game.events import *
 from game.ship import *
 from game.context import Context
 from game.display import announce
+import game.config as config
 
 import random
 
