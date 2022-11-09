@@ -1,5 +1,6 @@
 
 import random
+from game.display import announce
 
 
 class CrewMate:
@@ -23,6 +24,7 @@ class CrewMate:
     def receive_medicine (self, num):
         if (num > 0):
             self.sick = False
+            announce (self.name + " takes the medicine and is no longer sick!")
 
     def inflict_damage (self, num):
         self.health = self.health - num
