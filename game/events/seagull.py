@@ -48,7 +48,6 @@ class Seagull (Context, event.Event):
 
 
     def process (self, world):
-        # choose a lucky crew member
 
         self.go = False
         self.result = {}
@@ -57,6 +56,6 @@ class Seagull (Context, event.Event):
 
         while (self.go == False):
             print (str (self.seagulls) + " seagulls has appeared what do you want to do?")
-            Player.get_interaction ([self, world, world.ship, config.the_player])
+            Player.get_interaction ([self])
 
         return self.result
