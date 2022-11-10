@@ -56,17 +56,18 @@ class World (Context):
     def start_day (self):
         self.day = self.day + 1
 #        announce ("starting day " + str(self.day))
-
-        num_events = random.randint (0,2)
-        random.shuffle (self.events)
-        for i in range (0, num_events):
-            today_event = self.events.pop()
-            announce ("----------------------",pause=False)
-            results = today_event.process (self)
-            announce (results["message"])
-            for e in results["newevents"]:
-                self.events.append(e)
-            announce ("----------------------",pause=False)
+        
+        if self.day > 1:
+            num_events = random.randint (0,2)
+            random.shuffle (self.events)
+            for i in range (0, num_events):
+                today_event = self.events.pop()
+                announce ("----------------------",pause=False)
+                results = today_event.process (self)
+                announce (results["message"])
+                for e in results["newevents"]:
+                    self.events.append(e)
+                announce ("----------------------",pause=False)
         
         # ship knows where it is
         action = self.ship.start_day(self)
