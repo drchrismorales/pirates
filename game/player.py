@@ -127,6 +127,8 @@ class Player (Context):
             announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
             announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
             self.ship.print ()
+            for crew in self.get_pirates():
+                crew.print()
 
         if (self.ship.get_food()<0):
             self.gameInProgress = False
@@ -148,6 +150,8 @@ class Player (Context):
 
     def print (self):
         self.ship.print()
+        for crew in self.get_pirates():
+            crew.print()
         for crew in self.get_pirates():
             crew.print()
 
