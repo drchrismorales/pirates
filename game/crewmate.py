@@ -61,3 +61,6 @@ class CrewMate:
             print ("   " + self.name + " Health: " + str(self.health) + " --Sick")
         else:
             print ("   " + self.name + " Health: " + str(self.health))
+
+    def process_verb (self, verb, cmd_list, nouns):
+        print (self.name + " doesn't know how to " + verb)

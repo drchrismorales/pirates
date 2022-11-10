@@ -96,10 +96,12 @@ class Player (Context):
 
         cmd = input ("what is your command: ")
         cmd_list = cmd.split()   # split on whitespace
-        
+
         if(len(cmd_list) > 0):
             if (cmd_list[0] in verbs.keys()):
                 verbs[cmd_list[0]].process_verb (cmd_list[0], cmd_list, nouns)
+            elif len(cmd_list) > 1 and (cmd_list[0] in nouns.keys()):
+                nouns[cmd_list[0]].process_verb (cmd_list[1], cmd_list[1:], nouns)
             else:
                 announce (" I did not understand that command of " + cmd_list[0])
 

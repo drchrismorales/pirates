@@ -6,5 +6,5 @@ class Context:
         self.nouns = {}   # in game name of an object
 
     def process_verb (self, verb, cmd_list, nouns):
-        pass
+        print (self.nouns + " can't " + verb)
 
