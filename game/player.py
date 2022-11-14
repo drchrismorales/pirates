@@ -16,6 +16,9 @@ class Player (Context):
         self.gameInProgress = True
         self.ship = ship
         self.world = world
+        self.location = ship
+        self.next_loc = None
+        self.visiting = False
         self.reporting = True
         self.go = False
         self.pirates = []
@@ -67,13 +70,20 @@ class Player (Context):
             self.go = True
             if (len(cmd_list) > 1):
                 if (cmd_list[1] == "north"):
-                    self.ship.process_verb ("north", cmd_list, nouns)
+                    self.location.process_verb ("north", cmd_list, nouns)
                 elif (cmd_list[1] == "south"):
-                    self.ship.process_verb ("south", cmd_list, nouns)
+                    self.location.process_verb ("south", cmd_list, nouns)
                 elif (cmd_list[1] == "west"):
-                    self.ship.process_verb ("west", cmd_list, nouns)
+                    self.location.process_verb ("west", cmd_list, nouns)
                 elif (cmd_list[1] == "east"):
-                    self.ship.process_verb ("east", cmd_list, nouns)
+                    self.location.process_verb ("east", cmd_list, nouns)
+                elif (cmd_list[1] == "ashore" and self.location == self.ship):
+                    if self.ship.get_loc ().visitable == True:
+                        self.ship.process_verb ("anchor", cmd_list, nouns)
+                        self.ship.get_loc ().visit()
+                    else:
+                        announce("There's nowhere to go ashore.")
+                        self.go = False
         else:
             announce ("Error: Player object does not understand verb " + verb)
             pass
