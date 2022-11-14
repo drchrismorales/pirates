@@ -71,10 +71,13 @@ class CrewMate:
         self.lucky = False
 
     def print (self):
+        outstring = "   " + self.name + " Health: " + str(self.health)
         if (self.sick):
-            print ("   " + self.name + " Health: " + str(self.health) + " --Sick")
-        else:
-            print ("   " + self.name + " Health: " + str(self.health))
+            print (outstring + " --Sick")
+        if (self.lucky):
+            print (outstring + " ++Lucky")
+            
+        print (outstring)
 
     def process_verb (self, verb, cmd_list, nouns):
         print (self.name + " doesn't know how to " + verb)
