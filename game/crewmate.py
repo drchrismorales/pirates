@@ -1,6 +1,7 @@
 
 import random
 from game.display import announce
+from game.items import *
 
 
 class CrewMate:
@@ -14,6 +15,19 @@ class CrewMate:
         self.max_health = 100
         self.death_cause = ""
         self.health = self.max_health
+        self.speed = 100 + random.randrange(-20,21)
+        self.cur_move = 0
+        self.skills = {}
+        self.skills["brawling"] = random.randrange(10,101)
+        self.skills["swords"] = random.randrange(10,101)
+        self.skills["guns"] = random.randrange(10,101)
+        self.skills["cannons"] = random.randrange(10,101)
+        self.skills["swimming"] = random.randrange(10,101)
+
+        self.items = []
+        self.items.append(Cutlass())
+        self.items.append(Flintlock())
+
         self.sick = False
         self.lucky = False
 
