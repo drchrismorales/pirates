@@ -73,9 +73,9 @@ class CrewMate:
     def print (self):
         outstring = "   " + self.name + " Health: " + str(self.health)
         if (self.sick):
-            print (outstring + " --Sick")
+            outstring = outstring + " --Sick"
         if (self.lucky):
-            print (outstring + " ++Lucky")
+            outstring = outstring + " ++Lucky"
             
         print (outstring)
 
