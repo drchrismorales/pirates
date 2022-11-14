@@ -1,2 +1,6 @@
 
-__all__ = ["lucky", "sickness", "nothing", "seagull"]
+__all__ = ["drowned_pirates",
+"lucky",
+"sickness",
+"nothing",
+"seagull"]

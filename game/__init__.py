@@ -1,6 +1,7 @@
 __all__ = ["player",
 "world",
 "display",
+"combat",
 "config",
 "crewmate",
 "items",

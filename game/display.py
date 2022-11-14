@@ -12,3 +12,19 @@ def announce(announcement, end='\n', pause = True):
         input (announcement)
     else:
         print (announcement, end)
+
+def menu(options):
+    #if(the_display != None):
+    #   display stuff
+    #else:
+    chosen = -1
+    while chosen < 0 or chosen >= len(options):
+        menuletters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for i in range(len(options)):
+            if i >= len(menuletters):
+                print ("too many options :(")
+                break
+            print (menuletters[i] + " - " + options[i])
+        o = input("Choose: ")
+        chosen = menuletters.find(o)
+    return chosen

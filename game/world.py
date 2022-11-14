@@ -6,6 +6,7 @@ from game.ship import *
 from game.context import Context
 from game.display import announce
 import game.config as config
+import game.combat as Combat
 
 import random
 
@@ -48,6 +49,7 @@ class World (Context):
         self.events.append (seagull.Seagull())
         self.events.append (seagull.Seagull())
         self.events.append (sickness.Sickness())
+        self.events.append (drowned_pirates.DrownedPirates())
         self.nouns["world"] = self
 
     def get_day (self):
