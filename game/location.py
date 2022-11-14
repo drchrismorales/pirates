@@ -49,6 +49,7 @@ class Location:
     def end_turn(self):
         if config.the_player.next_loc != None:
             config.the_player.location = config.the_player.next_loc
+        config.the_player.location.enter()
         config.the_player.next_loc = None
 
 class SubLocation(Context):

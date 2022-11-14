@@ -87,6 +87,9 @@ class Ship (Context):
         return None
         self.food = self.food - amt
 
+    def enter (self):
+        pass
+        
     def end_day (self, world):
 
         if ((self.hx != 0) or (self.hy != 0)):
