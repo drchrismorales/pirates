@@ -1,5 +1,7 @@
 from game.context import Context
 from game import config
+from game.display import *
+import random
 
 class Location:
     symbols = [' ', '*', '-']
@@ -37,7 +39,7 @@ class Location:
         config.the_player.location = config.the_player.ship
 
     def start_turn(self):
-        pass
+        config.the_player.location.start_turn()
 
     def process_turn(self):
         config.the_player.go = False
@@ -59,3 +61,17 @@ class SubLocation(Context):
         self.main_location = m
         self.name = 'room'
         self.visitable = False
+        self.event_chance = 0
+        self.events = []
+    
+    def start_turn(self):
+        random.shuffle (self.events)
+        if len(self.events) > 0 and self.event_chance < random.randrange(100):
+            today_event = self.events.pop()
+            announce ("----------------------",pause=False)
+            results = today_event.process (self)
+            announce (results["message"])
+            for e in results["newevents"]:
+                self.events.append(e)
+            announce ("----------------------",pause=False)
+    
