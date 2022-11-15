@@ -84,7 +84,6 @@ class Ship (Context):
         return self.food
 
     def take_food (self, amt):
-        return None
         self.food = self.food - amt
 
     def enter (self):
