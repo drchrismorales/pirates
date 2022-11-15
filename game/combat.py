@@ -85,7 +85,12 @@ class Combat():
             if roll < chosen_attk.success:
                 announce (moving.name + " " + chosen_attk.description + " " + chosen_target.name + "!")
                 damage = random.randrange(chosen_attk.damage_range[0],chosen_attk.damage_range[1]+1)
-                chosen_target.inflict_damage(damage, "slain by a " + moving.name + "'s " + chosen_attk.name)
+                deathcause = "slain by a " + moving.name + "'s " + chosen_attk.name
+                chosen_target.inflict_damage(damage, deathcause)
+                if chosen_target.health <= 0:
+                    announce (chosen_target.name + " is killed!")
+
+                    
             elif (roll == chosen_attk.success):
                 announce (moving.name + " barely misses " + chosen_target.name + "!")
             else:
@@ -105,7 +110,6 @@ class Monster:
         self.health = self.health - num
         if(self.health > 0):
             return False
-        announce (self.name + " is killed!")
         return True
     
 
