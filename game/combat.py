@@ -45,11 +45,11 @@ class Combat():
             ready = [c for c in combatants if c.cur_move == max_move]
             moving = random.choice(ready)
             moving.cur_move = 0
+            options = []
+            attacks = []
+            items = []
             if isinstance(moving, CrewMate):
                 announce(moving.name + " has seized  the initiative! What should they do?",pause=False)
-                options = []
-                attacks = []
-                items = []
                 for t in self.monsters:
                     options.append("attack " + t.name)
                 choice = menu (options)
