@@ -2,6 +2,7 @@
 from game import location
 from game import config
 from game.display import announce
+from game.events import *
 
 class Island (location.Location):
 
@@ -31,6 +32,9 @@ class Beach_with_ship (location.SubLocation):
         self.verbs['south'] = self
         self.verbs['east'] = self
         self.verbs['west'] = self
+        self.event_chance = 50
+        self.events.append (seagull.Seagull())
+        self.events.append(drowned_pirates.DrownedPirates())
 
     def enter (self):
         announce ("arrive at the beach. Your ship is at anchor in a small bay to the south.")
@@ -54,6 +58,9 @@ class Trees (location.SubLocation):
         self.verbs['south'] = self
         self.verbs['east'] = self
         self.verbs['west'] = self
+        self.event_chance = 50
+        self.events.append(man_eating_monkeys.ManEatingMonkeys())
+        self.events.append(drowned_pirates.DrownedPirates())
 
     def enter (self):
         announce ("You walk into the small forest on the island. Nothing around here looks very edible.")
