@@ -71,16 +71,26 @@ class Player (Context):
             announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
         elif (verb == "save"):
-            announce ("saving...", end="",pause=False)
-            f = open ("save.json", "w")
-            f.write (jsonpickle.encode (self))
-            f.close()
-            announce ("..done")
+            if "jsonpickle" not in sys.modules:
+                announce ("jsonpickle hasn't be imported. Saving is impossible.")
+            elif self.location != self.ship:
+                announce ("Saving is only possible abord ship.")
+            else:
+                announce ("saving...", end="",pause=False)
+                f = open ("save.json", "w")
+                f.write (jsonpickle.encode (self))
+                f.close()
+                announce ("..done")
         elif (verb == "load"):
-            with open ("save.json") as f:
-                s = f.read()    
-            config.the_player = jsonpickle.decode (s)
-            self.go = True
+            if "jsonpickle" not in sys.modules:
+                announce ("jsonpickle hasn't be imported. Loading is impossible.")
+            elif self.location != self.ship:
+                announce ("Loading is only possible abord ship.")
+            else:
+                with open ("save.json") as f:
+                    s = f.read()    
+                config.the_player = jsonpickle.decode (s)
+                self.go = True
         elif (verb == "status"):
             self.print()
         elif (verb == "go"):
