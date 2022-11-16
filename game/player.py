@@ -62,8 +62,7 @@ class Player (Context):
 
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "quit"):
-            self.gameInProgress = False
-            self.go = True
+            sys.exit(0)
         elif (verb == "map"):
             self.print_map ()
         elif (verb == "inventory"):
