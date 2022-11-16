@@ -26,6 +26,8 @@ class Player (Context):
         self.go = False
         self.pirates = []
         self.piscine_dormitory = []
+        self.CHARGE_SIZE = 128
+        self.powder = self.CHARGE_SIZE*random.randrange(3,7)
         self.inventory = []
         n = random.randrange(2,6)
         for i in range (0,n):

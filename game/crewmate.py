@@ -2,14 +2,17 @@
 import random
 from game.display import announce
 from game.items import *
+from game.context import Context
+from game import config
 
 
-class CrewMate:
+class CrewMate(Context):
 
     # possible_names = ['alice', 'bob', 'charlie', 'darren', 'eliza', 'francine', 'gale', 'hope']
     possible_names = ['anne', 'bartholomew', 'benjamin', 'po', 'eliza', 'edward', 'grace', 'henry', 'mary', 'paulsgrave', 'jack', 'turgut', 'william', 'sayyida', 'emanuel', 'peter', 'richard', 'yang']
 
     def __init__ (self):
+        super().__init__()
         self.name = random.choice (CrewMate.possible_names)
         CrewMate.possible_names.remove (self.name)
         self.max_health = 100
@@ -27,9 +30,15 @@ class CrewMate:
         self.items = []
         self.items.append(Cutlass())
         self.items.append(Flintlock())
+        self.powder = 32
 
         self.sick = False
         self.lucky = False
+
+        self.verbs['equip'] = self
+        self.verbs['unequip'] = self
+        self.verbs['inventory'] = self
+        self.verbs['restock'] = self
 
     def __str__ (self):
         return self.name + " " + self.death_cause
@@ -62,6 +71,10 @@ class CrewMate:
 
     def start_day (self, ship):
         ship.take_food (self.get_hunger())
+        for i in self.items:
+            if i.firearm == True and i.charge == False and self.powder > 0:
+                i.charge = True
+                self.powder -= 1
         if (self.sick):
             self.inflict_damage (1, "Died of their illness")
             if(self.health <= 0):
@@ -83,4 +96,50 @@ class CrewMate:
         print (outstring)
 
     def process_verb (self, verb, cmd_list, nouns):
-        print (self.name + " doesn't know how to " + verb)
+        if (verb == "equip"):
+            if len(cmd_list) > 1:
+                i = 0
+                while i < len(config.the_player.inventory):
+                    if config.the_player.inventory[i].name == cmd_list[1]:
+                        found = config.the_player.inventory.pop(i)
+                        self.items.append(found)
+                        break
+                    i += 1
+            else:
+                announce ("Equip what?")
+        elif (verb == "unequip"):
+            if len(cmd_list) > 1:
+                i = 0
+                while i < len(self.items):
+                    if self.items[i].name == cmd_list[1]:
+                        found = self.pop(i)
+                        config.the_player.inventory.append(found)
+                        break
+                    i += 1
+            else:
+                announce ("Unequip what?")
+        elif (verb == "inventory"):
+            self.print_inventory()
+        elif (verb == "restock"):
+            if config.the_player.location != config.the_player.ship:
+                announce ("Powder and shot can only be restocked on the ship!")
+            else:
+                restock_needed = 32 - self.powder
+                if config.the_player.powder > restock_needed:
+                    self.powder += restock_needed
+                    config.the_player.powder -= restock_needed
+                else:
+                    self.powder += config.the_player.powder
+                    config.the_player.powder = 0
+                if restock_needed == 0:
+                    announce (self.name + " doesn't need a restock!")
+                else:
+                    announce (self.name + " restocks their powder and shot!")
+        else:
+            print (self.name + " doesn't know how to " + verb)
+
+    def print_inventory (self):
+        for i in self.items:
+            print (i)
+        print ()
+
