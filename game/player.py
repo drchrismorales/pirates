@@ -6,6 +6,8 @@ import jsonpickle
 from game.display import announce
 import game.config as config
 from game.items import *
+import sys
+import datetime
 
 class Player (Context):
 
@@ -189,26 +191,45 @@ class Player (Context):
         return self.world
 
     def get_pirates (self):
-        return [p for p in self.pirates if p.health > 0]
+        live_pirates = [p for p in self.pirates if p.health > 0]
+        if len(live_pirates) <= 0 and self.gameInProgress == True:
+            self.cleanup_pirates() #calls game over
+        return live_pirates
 
     def cleanup_pirates (self):
         i = 0
+        recovery_possible = True
+        #avoid endless recursion between get pirates and cleanup pirates
+        live_pirates = [p for p in self.pirates if p.health > 0]
+        if len(live_pirates) <= 0:
+            recovery_possible = False
+
         while i < len(self.pirates):
             if (self.pirates[i].health <= 0):
                 deader = self.pirates.pop(i)
+                self.add_to_inventory(deader.items)
+                deader.items = []
                 self.piscine_dormitory.append(deader)
             else:
                 i = i + 1
         if (len(self.pirates) <= 0):
             announce (" everyone died!!!!!!!!!!")
-            self.gameInProgress = False
+            Player.game_over()
 
     def kill_all_pirates (self, deathcause):
+        announce (" everyone died!!!!!!!!!!")
         while len(self.pirates) > 0:
             deader = self.pirates.pop()
-            if(deader.death_cause != ""):
+            if(deader.death_cause == ""):
                 deader.death_cause = deathcause
+            self.add_to_inventory(deader.items)
+            deader.items = []
             self.piscine_dormitory.append(deader)
+        Player.game_over()
+
+    def add_to_inventory (self, invList):
+        self.inventory = self.inventory + invList
+        self.inventory.sort()
 
     def print_map (self):
         ship_loc = self.ship.get_loc()
@@ -227,3 +248,34 @@ class Player (Context):
             print (i)
         print ()
 
+    @staticmethod
+    def game_over ():
+        config.the_player.gameInProgress = False
+        #open high score
+        Player.record_score()
+        sys.exit(0)
+
+    @staticmethod
+    def record_score():
+        f = open("scores.log", "a")
+        now = datetime.datetime.now()
+        score = 0
+        multiplier = 1
+        if len(config.the_player.pirates) <= 0:
+            multiplier = .5 #living to spend it is half the fun.
+        else:
+            for c in config.the_player.pirates:
+                score += c.health * 10
+        for t in config.the_player.inventory:
+            score += t.value
+
+        score = score*multiplier
+        f.write(now.strftime("%A %B %d, %Y") + " " + str(score) + " points\n")
+        for c in config.the_player.pirates:
+            f.write(str(c) + "lived to tell the tale\n")
+        for d in config.the_player.piscine_dormitory:
+            f.write(str(d) + "\n")
+        for i in config.the_player.inventory:
+            f.write(str(i) + "\n")
+        f.write("----------------------\n\n")
+        

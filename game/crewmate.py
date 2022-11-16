@@ -31,6 +31,9 @@ class CrewMate:
         self.sick = False
         self.lucky = False
 
+    def __str__ (self):
+        return self.name + " " + self.death_cause
+
     def get_name (self):
         return self.name
 
