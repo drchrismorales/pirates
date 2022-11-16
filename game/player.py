@@ -165,6 +165,7 @@ class Player (Context):
             loc = self.ship.get_loc()
             announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
             announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
+            announce ("Powder stores are at: " + str (self.powder//self.CHARGE_SIZE) + " cannon " + str (self.powder%self.CHARGE_SIZE) + " sidearm",pause=False)
             self.ship.print ()
             for crew in self.get_pirates():
                 crew.print()
