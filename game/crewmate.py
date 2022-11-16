@@ -71,14 +71,14 @@ class CrewMate(Context):
 
     def start_day (self, ship):
         ship.take_food (self.get_hunger())
-        for i in self.items:
-            if i.firearm == True and i.charge == False and self.powder > 0:
-                i.charge = True
-                self.powder -= 1
+        self.reload()
         if (self.sick):
             self.inflict_damage (1, "Died of their illness")
             if(self.health <= 0):
                 announce(self.name + " has died of their illness!")
+
+    def start_turn (self):
+        self.reload()
 
     def end_day (self):
         if (self.sick):
@@ -124,17 +124,7 @@ class CrewMate(Context):
             if config.the_player.location != config.the_player.ship:
                 announce ("Powder and shot can only be restocked on the ship!")
             else:
-                restock_needed = 32 - self.powder
-                if config.the_player.powder > restock_needed:
-                    self.powder += restock_needed
-                    config.the_player.powder -= restock_needed
-                else:
-                    self.powder += config.the_player.powder
-                    config.the_player.powder = 0
-                if restock_needed == 0:
-                    announce (self.name + " doesn't need a restock!")
-                else:
-                    announce (self.name + " restocks their powder and shot!")
+                self.restock()
         else:
             print (self.name + " doesn't know how to " + verb)
 
@@ -143,3 +133,20 @@ class CrewMate(Context):
             print (i)
         print ()
 
+    def restock(self):
+        restock_needed = 32 - self.powder
+        if config.the_player.powder > restock_needed:
+            self.powder += restock_needed
+            config.the_player.powder -= restock_needed
+        else:
+            self.powder += config.the_player.powder
+            config.the_player.powder = 0
+        if restock_needed == 0:
+            announce (self.name + " doesn't need a restock!")
+        else:
+            announce (self.name + " restocks their powder and shot!")
+    def reload(self):
+        for i in self.items:
+            if i.firearm == True and i.charge == False and self.powder > 0:
+                i.charge = True
+                self.powder -= 1

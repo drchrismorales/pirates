@@ -39,6 +39,8 @@ class Location:
         config.the_player.location = config.the_player.ship
 
     def start_turn(self):
+        for crew in config.the_player.get_pirates():
+            crew.start_turn ()
         config.the_player.location.start_turn()
 
     def process_turn(self):
