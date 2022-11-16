@@ -49,6 +49,8 @@ class Ship (Context):
                         self.medicine =  self.medicine - 1
                     else:
                         announce ("no more medicine to give")
+            else:
+                announce ("Give medicine to who?")
         else:
             announce ("Error: Ship object doe not understand verb " + verb)
 
