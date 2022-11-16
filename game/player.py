@@ -5,6 +5,7 @@ from game.context import Context
 import jsonpickle
 from game.display import announce
 import game.config as config
+from game.items import *
 
 class Player (Context):
 
@@ -23,6 +24,16 @@ class Player (Context):
         self.go = False
         self.pirates = []
         self.piscine_dormitory = []
+        self.inventory = []
+        n = random.randrange(2,6)
+        for i in range (0,n):
+            if random.randrange(0,10) == 0:
+                itm = Flintlock()
+            else:
+                itm = Cutlass()
+            self.inventory.append(itm)
+        self.inventory.sort()
+
         n = random.randrange(3,7)
         for i in range (0,n):
             c = CrewMate()
@@ -36,6 +47,7 @@ class Player (Context):
         self.verbs['load'] = self
         self.verbs['debug'] = self
         self.verbs['map'] = self
+        self.verbs['inventory'] = self
 
         self.seen = []
         for i in range (0, self.world.worldsize):
@@ -50,6 +62,8 @@ class Player (Context):
             self.go = True
         elif (verb == "map"):
             self.print_map ()
+        elif (verb == "inventory"):
+            self.print_inventory ()
         elif (verb == "debug"):
             announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
@@ -207,4 +221,9 @@ class Player (Context):
                 else:
                     print ("?", end="")
             print ()
+
+    def print_inventory (self):
+        for i in self.inventory:
+            print (i)
+        print ()
 

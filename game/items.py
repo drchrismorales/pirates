@@ -6,9 +6,19 @@ class Item():
         self.value = value
         self.damage = (0,0)
         self.firearm = False
+        self.charge = False
         self.skill = None
         self.verb = None
         self.verb2 = None
+
+    def __str__(self):
+        return self.name + " (" + str(self.value) + " shillings)"
+
+    def __lt__(self, other):
+        return self.name < other.name
+
+    def value(self):
+        return self.value
 
 class Cutlass(Item):
     def __init__(self):
