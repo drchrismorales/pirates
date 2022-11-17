@@ -76,7 +76,7 @@ class SubLocation(Context):
     def start_turn(self):
         #Maybe draw an event (if there are events and the event chance is rolled)
         random.shuffle (self.events)
-        if len(self.events) > 0 and self.event_chance < random.randrange(100):
+        if len(self.events) > 0 and self.event_chance > random.randrange(100):
             today_event = self.events.pop()
             announce ("----------------------",pause=False)
             results = today_event.process (self)
