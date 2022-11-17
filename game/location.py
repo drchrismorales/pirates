@@ -41,6 +41,7 @@ class Location:
             self.end_turn ()
         #Reset to default after visit
         config.the_player.location = config.the_player.ship
+        config.the_player.next_loc = None
 
     def start_turn(self):
         for crew in config.the_player.get_pirates():
