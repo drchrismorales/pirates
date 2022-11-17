@@ -69,7 +69,6 @@ class SubLocation(Context):
         self.main_location = m
         self.name = 'room'
         #The chance an event triggers in this sub-location
-        self.visitable = False
         self.event_chance = 0
         #The events that may occur in this sub-location
         self.events = []
