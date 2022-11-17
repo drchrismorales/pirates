@@ -7,6 +7,7 @@ from game import config
 
 
 class CrewMate(Context):
+    '''Describes a pirate crewmate. The player controls these.'''
 
     # possible_names = ['alice', 'bob', 'charlie', 'darren', 'eliza', 'francine', 'gale', 'hope']
     possible_names = ['anne', 'bartholomew', 'benjamin', 'po', 'eliza', 'edward', 'grace', 'henry', 'mary', 'paulsgrave', 'jack', 'turgut', 'william', 'sayyida', 'emanuel', 'peter', 'richard', 'yang']
@@ -16,10 +17,12 @@ class CrewMate(Context):
         self.name = random.choice (CrewMate.possible_names)
         CrewMate.possible_names.remove (self.name)
         self.max_health = 100
-        self.death_cause = ""
+        self.death_cause = "" #track cause of death for the score log
         self.health = self.max_health
+        #speed and move points for combat
         self.speed = 100 + random.randrange(-20,21)
         self.cur_move = 0
+        #dictionary of skill success rates (in percent). Currently only used in combat.
         self.skills = {}
         self.skills["brawling"] = random.randrange(10,101)
         self.skills["swords"] = random.randrange(10,101)
@@ -27,20 +30,24 @@ class CrewMate(Context):
         self.skills["cannons"] = random.randrange(10,101)
         self.skills["swimming"] = random.randrange(10,101)
 
+        #list of equipped items. Currently only used in combat.
         self.items = []
         self.items.append(Cutlass())
         self.items.append(Flintlock())
         self.powder = 32
 
+        #Status effects
         self.sick = False
         self.lucky = False
 
+        #Things a pirate can do. Use name X to use (ex: anne equip flintlock)
         self.verbs['equip'] = self
         self.verbs['unequip'] = self
         self.verbs['inventory'] = self
         self.verbs['restock'] = self
 
     def __str__ (self):
+        '''to string. Lists name and death cause (for score log)'''
         return self.name + " " + self.death_cause
 
     def get_name (self):
@@ -50,11 +57,13 @@ class CrewMate(Context):
         return self.health
 
     def receive_medicine (self, num):
+        '''Makes the pirate no longer sick (but doesn't remove sickness event)'''
         if (num > 0):
             self.sick = False
             announce (self.name + " takes the medicine and is no longer sick!")
 
     def inflict_damage (self, num, deathcause):
+        '''Injures the pirate. If needed, it will record the pirate's cause of death'''
         self.health = self.health - num
         if(self.health > 0):
             return False
@@ -62,6 +71,7 @@ class CrewMate(Context):
         return True
 
     def get_hunger (self):
+        '''Sick pirates need more food.'''
         if (self.sick):
             return 3
         return 1
@@ -70,6 +80,7 @@ class CrewMate(Context):
         self.sick = flag
 
     def start_day (self, ship):
+        '''Beginning of day activities (days only occur while sailing on the ship)'''
         ship.take_food (self.get_hunger())
         self.reload()
         if (self.sick):
@@ -78,15 +89,18 @@ class CrewMate(Context):
                 announce(self.name + " has died of their illness!")
 
     def start_turn (self):
+        '''Beginning of exploration turn activities (turns occur directly while exploring and as part of days)'''
         self.reload()
 
     def end_day (self):
+        '''End of day activities (days only occur while sailing on the ship)'''
         if (self.sick):
             if (self.lucky == True or random.randint(1,10) == 1):
                 self.sick = False
         self.lucky = False
 
     def print (self):
+        '''Prints status to terminal'''
         outstring = "   " + self.name + " Health: " + str(self.health)
         if (self.sick):
             outstring = outstring + " --Sick"
@@ -96,6 +110,8 @@ class CrewMate(Context):
         print (outstring)
 
     def process_verb (self, verb, cmd_list, nouns):
+        '''Processes commands'''
+        #The pirate equips an item (based on the name of the item)
         if (verb == "equip"):
             if len(cmd_list) > 1:
                 i = 0
@@ -107,6 +123,8 @@ class CrewMate(Context):
                     i += 1
             else:
                 announce ("Equip what?")
+
+        #The pirate un-equips an item (based on the name of the item)
         elif (verb == "unequip"):
             if len(cmd_list) > 1:
                 i = 0
@@ -118,8 +136,12 @@ class CrewMate(Context):
                     i += 1
             else:
                 announce ("Unequip what?")
+
+        #Prints a pirate's equipped items
         elif (verb == "inventory"):
             self.print_inventory()
+
+        #Orders a pirate to restock their black powder (can only be done on ship)
         elif (verb == "restock"):
             if config.the_player.location != config.the_player.ship:
                 announce ("Powder and shot can only be restocked on the ship!")
@@ -134,6 +156,7 @@ class CrewMate(Context):
         print ()
 
     def restock(self):
+        '''pirate restocks their black powder from the ship's reserves'''
         restock_needed = 32 - self.powder
         if config.the_player.powder > restock_needed:
             self.powder += restock_needed
@@ -145,7 +168,9 @@ class CrewMate(Context):
             announce (self.name + " doesn't need a restock!")
         else:
             announce (self.name + " restocks their powder and shot!")
+
     def reload(self):
+        '''pirate reloads their firearms (flintlock pistols are too time consuming to load in combat)'''
         for i in self.items:
             if i.firearm == True and i.charge == False and self.powder > 0:
                 i.charge = True

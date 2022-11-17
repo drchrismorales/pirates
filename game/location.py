@@ -4,6 +4,7 @@ from game.display import *
 import random
 
 class Location:
+    '''A map location. May own explorable sub-locations'''
     symbols = [' ', '*', '-']
 
     def __init__(self, x, y, w) -> None:
@@ -12,6 +13,7 @@ class Location:
         self.world = w
         self.symbol = ' '
         self.name = 'ocean'
+        #by default, not visitable
         self.visitable = False
         self.go = True
     
@@ -31,11 +33,13 @@ class Location:
         pass
 
     def visit(self):
+        '''main loop governing exploration of an island'''
         config.the_player.visiting = True
         while config.the_player.visiting:
             self.start_turn ()
             self.process_turn ()
             self.end_turn ()
+        #Reset to default after visit
         config.the_player.location = config.the_player.ship
 
     def start_turn(self):
@@ -57,16 +61,20 @@ class Location:
         config.the_player.next_loc = None
 
 class SubLocation(Context):
+    '''The explorable locations owned by a map Location that can be visited.'''
 
     def __init__(self, m):
         super().__init__()
         self.main_location = m
         self.name = 'room'
+        #The chance an event triggers in this sub-location
         self.visitable = False
         self.event_chance = 0
+        #The events that may occur in this sub-location
         self.events = []
     
     def start_turn(self):
+        #Maybe draw an event (if there are events and the event chance is rolled)
         random.shuffle (self.events)
         if len(self.events) > 0 and self.event_chance < random.randrange(100):
             today_event = self.events.pop()
