@@ -82,11 +82,11 @@ class CrewMate(Context):
     def start_day (self, ship):
         '''Beginning of day activities (days only occur while sailing on the ship)'''
         ship.take_food (self.get_hunger())
-        self.reload()
         if (self.sick):
             self.inflict_damage (1, "Died of their illness")
             if(self.health <= 0):
                 announce(self.name + " has died of their illness!")
+        self.start_turn ()
 
     def start_turn (self):
         '''Beginning of exploration turn activities (turns occur directly while exploring and as part of days)'''
