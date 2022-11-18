@@ -75,7 +75,7 @@ class Player (Context):
             if config.the_player.location != config.the_player.ship:
                 announce ("Powder and shot can only be restocked on the ship!")
             else:
-                for c in self.pirates:
+                for c in self.get_pirates():
                     c.restock()
         elif (verb == "save"):
             if "jsonpickle" not in sys.modules:
