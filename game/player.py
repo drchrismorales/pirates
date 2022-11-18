@@ -285,6 +285,8 @@ class Player (Context):
         else:
             for c in config.the_player.pirates:
                 score += c.health * 10
+                config.the_player.add_to_inventory(c.items)
+                c.items = []
         for t in config.the_player.inventory:
             score += t.value
 
