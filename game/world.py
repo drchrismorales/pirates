@@ -37,11 +37,14 @@ class World (Context):
         #Add new islands to this list:
         island_list = [island.Island]
         for cur_island in island_list:
-            x = random.randrange (1, World.worldsize - 2)
-            y = random.randrange (1, World.worldsize - 2)
-            #Islands can't be within a 2x2 square of the start location
-            if (self.locs[x][y].name == "ocean") and ((y in range(self.starty-2, self.starty+3)) or (x in range(self.startx-2, self.startx+3))):
-                self.locs[x][y] = cur_island (x, y, self)
+            placed = False
+            while placed == False:
+                x = random.randrange (1, World.worldsize - 2)
+                y = random.randrange (1, World.worldsize - 2)
+                #Islands can't be within a 2x2 square of the start location
+                if (self.locs[x][y].name == "ocean") and ((y in range(self.starty-2, self.starty+3)) or (x in range(self.startx-2, self.startx+3))):
+                    self.locs[x][y] = cur_island (x, y, self)
+                    placed = True
 
         #The pirates apparently got lost in a whirlpool
         whirl = whirlpool.Whirlpool (self.startx + 1, self.starty, self)
