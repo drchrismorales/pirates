@@ -52,6 +52,7 @@ class Player (Context):
         self.verbs['debug'] = self
         self.verbs['map'] = self
         self.verbs['inventory'] = self
+        self.verbs['restock'] = self
 
         self.seen = []
         for i in range (0, self.world.worldsize):
@@ -70,6 +71,12 @@ class Player (Context):
         elif (verb == "debug"):
             announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
+        elif (verb == "restock"):
+            if config.the_player.location != config.the_player.ship:
+                announce ("Powder and shot can only be restocked on the ship!")
+            else:
+                for c in self.pirates:
+                    c.restock()
         elif (verb == "save"):
             if "jsonpickle" not in sys.modules:
                 announce ("jsonpickle hasn't be imported. Saving is impossible.")

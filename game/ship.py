@@ -7,7 +7,7 @@ from game.display import announce
 import game.config as config
 
 class Ship (Context):
-
+    '''The pirate ship. Mostly handles food and sailing around the ocean map.'''
     def __init__(self):
         super().__init__()
         self.hx = 0
