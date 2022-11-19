@@ -9,6 +9,7 @@ import game.config as config
 import random
 
 class Whirlpool (Context, location.Location):
+    #each location has parent class - location.Location
 
     def __init__ (self, x, y, w):
         Context.__init__(self)

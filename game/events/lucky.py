@@ -4,6 +4,7 @@ import random
 import game.config as config
 
 class LuckyDay (event.Event):
+    #every event has event.Event parent class...
 
     def __init__ (self):
         self.name = " crew member has a lucky day"
