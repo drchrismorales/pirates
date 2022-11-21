@@ -18,4 +18,4 @@ To add an explorable location:
 4) Add the island to the island_list list.
 5) You will also need to regularly test your island, I suggest adjusting the test islancd (testland) in world.py to be an instance of your island. The testland is always directly south of the starting point. 
 
-Each sublocation in an explorable location like an island has its own event pool, so you will also likely want to add events see island.py and its history for an example.
+Each sublocation in an explorable location like an island has its own event pool, so you will also likely want to add events. See island.py and its history for an example.
