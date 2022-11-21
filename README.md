@@ -7,7 +7,7 @@ To add an event:
 2) Add the file name to __init__.py
 3) Add the event to an event pool.
    Example: To add the event to the world event pool
-   a) Import the event into world.py
-   b) Append at least one instance of the event to the events list.
+   1) Import the event into world.py
+   2) Append at least one instance of the event to the events list.
    See commit d580f65807d524dabbe84bf49ffd1de524f26e64 for an example
 
