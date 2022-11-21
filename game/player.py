@@ -53,6 +53,7 @@ class Player (Context):
         self.verbs['map'] = self
         self.verbs['inventory'] = self
         self.verbs['restock'] = self
+        self.verbs['skills'] = self
 
         self.seen = []
         for i in range (0, self.world.worldsize):
@@ -77,6 +78,9 @@ class Player (Context):
             else:
                 for c in self.get_pirates():
                     c.restock()
+        elif (verb == "skills"):
+            for c in self.get_pirates():
+                c.print_skills ()
         elif (verb == "save"):
             if "jsonpickle" not in sys.modules:
                 announce ("jsonpickle hasn't be imported. Saving is impossible.")
