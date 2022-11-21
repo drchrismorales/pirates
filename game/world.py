@@ -103,6 +103,11 @@ class World (Context):
         return self.locs[World.startx][World.starty]
 
     def get_loc (self, x, y):
+        # The World is... toroidal, actually.
+        #  Modulo operator causes the world to loop from bottom to top and right to left
+        #  Python negative index handling causes it to loop the other way too.
+        x = x%World.worldsize
+        y = y%World.worldsize
         return self.locs[x][y]
 
     def get_ship (self):
