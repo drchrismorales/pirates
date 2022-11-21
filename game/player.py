@@ -103,7 +103,8 @@ class Player (Context):
                 config.the_player = jsonpickle.decode (s)
                 self.go = True
         elif (verb == "status"):
-            self.print()
+            announce ("Day " + str(self.world.get_day()),pause=False)
+            self.status()
         elif (verb == "go"):
             self.go = True
             if (len(cmd_list) > 1):
@@ -172,14 +173,7 @@ class Player (Context):
 
         if (self.reporting):
             announce ("Captain's Log: Day " + str(self.world.get_day()),pause=False)
-            announce ("The ship is at location ", end="",pause=False)
-            loc = self.ship.get_loc()
-            announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
-            announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
-            announce ("Powder stores are at: " + str (self.powder//self.CHARGE_SIZE) + " cannon " + str (self.powder%self.CHARGE_SIZE) + " sidearm",pause=False)
-            self.ship.print ()
-            for crew in self.get_pirates():
-                crew.print()
+            self.status()
 
         if (self.ship.get_food()<0):
             self.gameInProgress = False
@@ -199,10 +193,18 @@ class Player (Context):
     def times_up (self):
         self.gameInProgress = False
 
-    def print (self):
-        self.ship.print()
+    def status (self):
+        announce ("The ship is at location ", end="",pause=False)
+        loc = self.ship.get_loc()
+        announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
+        announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
+        announce ("Powder stores are at: " + str (self.powder//self.CHARGE_SIZE) + " cannon " + str (self.powder%self.CHARGE_SIZE) + " sidearm",pause=False)
+        self.ship.print ()
         for crew in self.get_pirates():
             crew.print()
+        
+    def print (self):
+        self.ship.print()
         for crew in self.get_pirates():
             crew.print()
 
