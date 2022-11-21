@@ -139,7 +139,7 @@ class CrewMate(Context):
                 i = 0
                 while i < len(self.items):
                     if self.items[i].name == cmd_list[1]:
-                        found = self.pop(i)
+                        found = self.items.pop(i)
                         config.the_player.inventory.append(found)
                         break
                     i += 1
