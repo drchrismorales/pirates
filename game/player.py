@@ -75,7 +75,7 @@ class Player (Context):
             if config.the_player.location != config.the_player.ship:
                 announce ("Powder and shot can only be restocked on the ship!")
             else:
-                for c in self.pirates:
+                for c in self.get_pirates():
                     c.restock()
         elif (verb == "save"):
             if "jsonpickle" not in sys.modules:
@@ -285,6 +285,8 @@ class Player (Context):
         else:
             for c in config.the_player.pirates:
                 score += c.health * 10
+                config.the_player.add_to_inventory(c.items)
+                c.items = []
         for t in config.the_player.inventory:
             score += t.value
 

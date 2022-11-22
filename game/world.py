@@ -15,7 +15,6 @@ class World (Context):
     worldsize = 25
     startx = 12
     starty = 12
-    num_islands = 8
 
     def __init__ (self, s):
         super().__init__()
@@ -26,21 +25,31 @@ class World (Context):
             self.locs.append([])
             for j in range (0, World.worldsize):
                 self.locs[i].append(Location(i, j, self))
-
+        
         self.homex = random.randrange (1,World.worldsize-2)
         self.homey = random.randrange (1,World.worldsize-2)
+        #Home port can't be within a 4x4 square of the start location
+        while (self.homey in range(self.starty-4, self.starty+5)) or (self.homex in range(self.startx-4, self.startx+5)):
+            self.homex = random.randrange (1,World.worldsize-2)
+            self.homey = random.randrange (1,World.worldsize-2)
         self.locs[self.homex][self.homey] = homeport.HomePort (self.homex, self.homey, self)
 
-        i = 0
-        while (i < World.num_islands):
+        #Add new islands to this list:
+        island_list = [island.Island]
+        for cur_island in island_list:
             x = random.randrange (1, World.worldsize - 2)
             y = random.randrange (1, World.worldsize - 2)
-            if (self.locs[x][y].name == "ocean"):
-                self.locs[x][y] = island.Island (x, y, self)
-                i = i + 1
+            #Islands can't be within a 2x2 square of the start location
+            if (self.locs[x][y].name == "ocean") and ((y in range(self.starty-2, self.starty+3)) or (x in range(self.startx-2, self.startx+3))):
+                self.locs[x][y] = cur_island (x, y, self)
 
+        #The pirates apparently got lost in a whirlpool
         whirl = whirlpool.Whirlpool (self.startx + 1, self.starty, self)
         self.locs[self.startx+1][self.starty] = whirl
+
+        #Test island: always start off next to a test island. Swap in your island to test yours.
+        testland = island.Island (self.startx, self.starty+1, self)
+        self.locs[self.startx][self.starty+1] = testland
 
         self.events = []
         self.events.append (lucky.LuckyDay())

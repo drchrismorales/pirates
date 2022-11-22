@@ -15,7 +15,6 @@ class Location:
         self.name = 'ocean'
         #by default, not visitable
         self.visitable = False
-        self.go = True
     
     def get_x(self):
         return self.x
