@@ -11,7 +11,8 @@ class CrewMate(Context):
 
     # possible_names = ['alice', 'bob', 'charlie', 'darren', 'eliza', 'francine', 'gale', 'hope']
     possible_names = ['anne', 'bartholomew', 'benjamin', 'po', 'eliza', 'edward', 'grace', 'henry', 'mary', 'paulsgrave', 'jack', 'turgut', 'william', 'sayyida', 'emanuel', 'peter', 'richard', 'yang']
-
+    longest_name = max([len(c) for c in possible_names] )
+    
     def __init__ (self):
         super().__init__()
         self.name = random.choice (CrewMate.possible_names)
@@ -45,6 +46,7 @@ class CrewMate(Context):
         self.verbs['unequip'] = self
         self.verbs['inventory'] = self
         self.verbs['restock'] = self
+        self.verbs['skills'] = self
 
     def __str__ (self):
         '''to string. Lists name and death cause (for score log)'''
@@ -109,6 +111,13 @@ class CrewMate(Context):
             
         print (outstring)
 
+    def print_skills (self):
+        '''Prints status to terminal'''
+        outstring = self.name + ":" + " "*(CrewMate.longest_name+1-len(self.name))
+        for k in self.skills.keys():
+            outstring = outstring + k + ":" + str(self.skills[k]) + " "
+        print (outstring)
+
     def process_verb (self, verb, cmd_list, nouns):
         '''Processes commands'''
         #The pirate equips an item (based on the name of the item)
@@ -130,7 +139,7 @@ class CrewMate(Context):
                 i = 0
                 while i < len(self.items):
                     if self.items[i].name == cmd_list[1]:
-                        found = self.pop(i)
+                        found = self.items.pop(i)
                         config.the_player.inventory.append(found)
                         break
                     i += 1
@@ -147,6 +156,8 @@ class CrewMate(Context):
                 announce ("Powder and shot can only be restocked on the ship!")
             else:
                 self.restock()
+        elif (verb == "skills"):
+            self.print_skills ()
         else:
             print (self.name + " doesn't know how to " + verb)
 
