@@ -12,9 +12,9 @@ import random
 
 class World (Context):
 
-    worldsize = 25
-    startx = 12
-    starty = 12
+    worldsize = 20
+    startx = 10
+    starty = 10
 
     def __init__ (self, s):
         super().__init__()
