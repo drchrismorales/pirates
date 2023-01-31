@@ -1,3 +1,5 @@
+Authors: Dr. Delbert Hart, Professor of Computer Science, SUNY Plattsburgh and Dr. Christopher Morales, Assistant Professor of Computer Science, SUNY Plattsburgh.
+
 A game about a lost crew of pirates exploring the ocean, trying to find their home port.
 
 It is designed to be easily extendable, for use in a classroom context. The main extension points are 1) explorable islands and other locations and 2) events. When adding new islands and events, the student will most likely also want to add new 1) monsters and combats and/or 2) items.
