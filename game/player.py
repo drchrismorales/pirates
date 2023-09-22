@@ -99,7 +99,7 @@ class Player (Context):
                 announce ("Loading is only possible abord ship.")
             else:
                 with open ("save.json") as f:
-                    s = f.read()    
+                    s = f.read()
                 config.the_player = jsonpickle.decode (s)
                 self.go = True
         elif (verb == "status"):
@@ -130,7 +130,7 @@ class Player (Context):
     @staticmethod
     def get_interaction (contexts):
         # look at all of the the contexts and find the verbs and nouns
-        # that make sense in this context 
+        # that make sense in this context
         # and then dispatch an action that is identified
 
         verbs = {}
@@ -181,7 +181,7 @@ class Player (Context):
             config.the_player.kill_all_pirates("died of sudden-onset starvation")
             return
 
-        
+
         while (self.go == False):
             Player.get_interaction ([self, self.ship])
 
@@ -202,7 +202,7 @@ class Player (Context):
         self.ship.print ()
         for crew in self.get_pirates():
             crew.print()
-        
+
     def print (self):
         self.ship.print()
         for crew in self.get_pirates():
@@ -256,6 +256,10 @@ class Player (Context):
         self.inventory = self.inventory + invList
         self.inventory.sort()
 
+    def cleanup_items(self):
+        for pirate in self.pirates:
+            pirate.items = [itm for itm in pirate.items if not itm.usedUp]
+
     def print_map (self):
         ship_loc = self.ship.get_loc()
         for y in range (0, self.world.worldsize):
@@ -305,4 +309,3 @@ class Player (Context):
         for i in config.the_player.inventory:
             f.write(str(i) + "\n")
         f.write("----------------------\n\n")
-        

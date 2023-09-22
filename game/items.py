@@ -1,3 +1,4 @@
+from game.display import menu
 
 class Item():
     def __init__(self, name, value):
@@ -7,6 +8,7 @@ class Item():
         self.damage = (0,0)
         self.firearm = False
         self.charge = False
+        self.usedUp = False
         self.skill = None
         self.verb = None
         self.verb2 = None
@@ -19,6 +21,27 @@ class Item():
 
     def value(self):
         return self.value
+
+    def ready(self):
+        return (self.firearm == False or self.charge == True)
+
+    def discharge(self):
+        if(self.firearm):
+            self.charge = False
+
+    def recharge(self, owner):
+        if self.firearm == True and self.charge == False and owner.powder > 0:
+            self.charge = True
+            owner.powder -= 1
+
+    def pickTargets(self, attacker, allies, enemies):
+        options = []
+        for t in enemies:
+            options.append("attack " + t.name)
+        choice = menu (options)
+        return [enemies[choice]]
+
+
 
 class Cutlass(Item):
     def __init__(self):
@@ -37,4 +60,3 @@ class Flintlock(Item):
         self.skill = "guns"
         self.verb = "shoot"
         self.verb2 = "shoots"
-

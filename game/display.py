@@ -24,7 +24,8 @@ def menu(options):
             if i >= len(menuletters):
                 print ("too many options :(")
                 break
-            print (menuletters[i] + " - " + options[i])
+            print (menuletters[i] + " - " + str(options[i]))
+        #Bad :(
         o = input("Choose: ")
         chosen = menuletters.find(o)
     return chosen

@@ -1,5 +1,6 @@
 
 import random
+import game.combat as combat
 from game.display import announce
 from game.items import *
 from game.context import Context
@@ -108,7 +109,7 @@ class CrewMate(Context):
             outstring = outstring + " --Sick"
         if (self.lucky):
             outstring = outstring + " ++Lucky"
-            
+
         print (outstring)
 
     def print_skills (self):
@@ -183,6 +184,16 @@ class CrewMate(Context):
     def reload(self):
         '''pirate reloads their firearms (flintlock pistols are too time consuming to load in combat)'''
         for i in self.items:
-            if i.firearm == True and i.charge == False and self.powder > 0:
-                i.charge = True
-                self.powder -= 1
+            i.recharge(self)
+
+    def getAttacks(self):
+        '''gets the list of possible attacks for this pirate'''
+        options = []
+        if "brawling" in self.skills.keys():
+            options.append(combat.CombatAction("punch",combat.Attack("punch", "punches", self.skills["brawling"], (1,11)), None))
+        for i in self.items:
+            if i.damage[1] > 0 and i.verb != None and i.skill in self.skills.keys() and i.ready():
+                putative_attk = combat.CombatAction(i.verb + " with " + i.name, combat.Attack(i.name, i.verb2, self.skills[i.skill], i.damage), i)
+                if putative_attk not in options:
+                    options.append(putative_attk)
+        return options

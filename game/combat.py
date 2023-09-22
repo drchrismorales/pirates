@@ -1,25 +1,74 @@
 import random
 import game.config as config
+import game.crewmate as crew
 from game.display import announce
 from game.display import menu
-from game.crewmate import CrewMate
 from game.context import Context
 
 class Attack():
+    """Basic attack object, with a name, description, chance of success, and damage range. Sufficient for specifying monster attacks."""
     def __init__ (self, name, description, success, damage_range):
         self.name = name
         self.description = description
         self.success = success
         self.damage_range = damage_range
-    
+
     def __eq__(self, other):
         if not isinstance(other, Attack):
             return False
         if self.name == other.name and self.description == other.description and self.success == other.success and self.damage_range == other.damage_range:
             return True
         return False
-        
-    
+
+class CombatAction():
+    """A more sophisticated combat action object, with a name, Attack instance, and Item instance. Resolves all combat actions. Used for monster attacks, but the added complexity over Attack alone is meant for player actions."""
+    def __init__ (self, name, attack, item):
+        self.name = name
+        self.attack = attack
+        self.item = item
+
+    def __str__ (self):
+        """To-string uses the Action's listed name"""
+        return self.name
+
+    def __eq__ (self, other):
+        """Test-equals compares the two CombatActions' Attacks"""
+        if not isinstance(other, CombatAction):
+            return False
+        return self.attack == other.attack
+
+    def pickTargets(self, attacker, allies, enemies):
+        """The player should pick targets. Passes through to the associated item if there is one, otherwise has the player pick one target"""
+        if (self.item != None):
+            return self.item.pickTargets(attacker, allies, enemies)
+        else:
+            options = []
+            for t in enemies:
+                options.append("attack " + t.name)
+            choice = menu (options)
+            return [enemies[choice]]
+
+    def resolve(self, moving, chosen_targets):
+        """The action resolves itself, using moving and the chosen_targets"""
+        chosen_attk = self.attack
+        for chosen_target in chosen_targets:
+            if chosen_target != None:
+                chosen_target = chosen_targets[0]
+                roll = random.randrange(100)
+                if moving.lucky == True:
+                    roll = min(roll, random.randrange(100))
+                if roll < chosen_attk.success:
+                    announce (moving.name + " " + chosen_attk.description + " " + chosen_target.name + "!")
+                    damage = random.randrange(chosen_attk.damage_range[0],chosen_attk.damage_range[1]+1)
+                    deathcause = "slain by a " + moving.name + "'s " + chosen_attk.name
+                    chosen_target.inflict_damage(damage, deathcause)
+                    if chosen_target.health <= 0:
+                        announce (chosen_target.name + " is killed!")
+                elif (roll == chosen_attk.success):
+                    announce (moving.name + " barely misses " + chosen_target.name + "!")
+                else:
+                    announce (moving.name + " misses " + chosen_target.name + ".")
+
 class Combat():
 
     def __init__ (self, monsters):
@@ -27,6 +76,17 @@ class Combat():
 
     def process_verb (self, verb, cmd_list, nouns):
         print (self.nouns + " can't " + verb)
+
+    def crewmateAction(self, attacker, allies, enemies):
+        """The player chooses an action for a crewmate to take."""
+        announce(attacker.name + " has seized the initiative! What should they do?",pause=False)
+        actions = attacker.getAttacks()
+        # actions = attacker.getMiscActions()
+        if len(actions) > 0:
+            choice = menu (actions)
+            return actions[choice]
+        #else: run in circles, scream and shout
+        return None
 
     def combat (self):
         while len(self.monsters):
@@ -45,57 +105,21 @@ class Combat():
             ready = [c for c in combatants if c.cur_move == max_move]
             moving = random.choice(ready)
             moving.cur_move = 0
-            options = []
-            attacks = []
-            items = []
-            if isinstance(moving, CrewMate):
-                announce(moving.name + " has seized  the initiative! What should they do?",pause=False)
-                for t in self.monsters:
-                    options.append("attack " + t.name)
-                choice = menu (options)
-                chosen_target = self.monsters[choice]
-
-                options = []
-                if "brawling" in moving.skills.keys():
-                    options.append("punch")
-                    attacks.append(Attack("punch", "punches", moving.skills["brawling"], (1,11)))
-                    items.append(None)
-                for i in moving.items:
-                    if i.damage[1] > 0 and i.verb != None and i.skill in moving.skills.keys() and (i.firearm == False or i.charge == True):
-                        putative_attk = Attack(i.name, i.verb2, moving.skills[i.skill], i.damage)
-                        if putative_attk not in attacks:
-                            options.append(i.verb + " with " + i.name)
-                            attacks.append(putative_attk)
-                            items.append(i)
-                if len(attacks) > 0:
-                    choice = menu (options)
-                    chosen_attk = attacks[choice]
-                    chosen_item = items[choice]
-                    if chosen_item != None and chosen_item.firearm == True:
-                        chosen_item.charge = False
-                #else: run in circles, scream and shout
+            if isinstance(moving, crew.CrewMate):
+                chosen_action = self.crewmateAction(moving, config.the_player.get_pirates(), self.monsters)
+                if(chosen_action != None):
+                    chosen_targets = chosen_action.pickTargets(moving, config.the_player.get_pirates(), self.monsters)
             else:
-                chosen_target = random.choice(config.the_player.get_pirates())
-                for key in moving.attacks.keys():
-                    attacks.append(Attack(key, moving.attacks[key][0], moving.attacks[key][1], moving.attacks[key][2]))
-                chosen_attk = random.choice(attacks)
-            roll = random.randrange(100)
-            if moving.lucky == True:
-                roll = min(roll, random.randrange(100))
-            if roll < chosen_attk.success:
-                announce (moving.name + " " + chosen_attk.description + " " + chosen_target.name + "!")
-                damage = random.randrange(chosen_attk.damage_range[0],chosen_attk.damage_range[1]+1)
-                deathcause = "slain by a " + moving.name + "'s " + chosen_attk.name
-                chosen_target.inflict_damage(damage, deathcause)
-                if chosen_target.health <= 0:
-                    announce (chosen_target.name + " is killed!")
-
-                    
-            elif (roll == chosen_attk.success):
-                announce (moving.name + " barely misses " + chosen_target.name + "!")
-            else:
-                announce (moving.name + " misses " + chosen_target.name + ".")
+                chosen_targets = [random.choice(config.the_player.get_pirates())]
+                chosen_attk = moving.pickAttack()
+                chosen_action = CombatAction(chosen_attk.name, chosen_attk, None)
+            #Resolve
+            chosen_action.resolve(moving, chosen_targets)
             self.monsters = [m for m in self.monsters if m.health >0]
+            if chosen_action.item:
+                chosen_action.item.discharge()
+            config.the_player.cleanup_items()
+
 
 class Monster:
     def __init__ (self, name, hp, attacks, speed):
@@ -105,13 +129,18 @@ class Monster:
         self.speed = speed
         self.cur_move = 0
         self.lucky = False
-    
+
     def inflict_damage (self, num, deathcause):
         self.health = self.health - num
         if(self.health > 0):
             return False
         return True
-    
+
+    def pickAttack(self):
+        attacks = []
+        for key in self.attacks.keys():
+             attacks.append(Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2]))
+        return random.choice(attacks)
 
 class Macaque(Monster):
     def __init__ (self, name):
@@ -128,4 +157,3 @@ class Drowned(Monster):
         attacks["punch 2"] = ["punches",random.randrange(35,51), (1,10)]
         #7 to 19 hp, bite attack, 65 to 85 speed (100 is "normal")
         super().__init__(name, random.randrange(7,20), attacks, 75 + random.randrange(-10,11))
-
