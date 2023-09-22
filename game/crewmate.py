@@ -186,6 +186,9 @@ class CrewMate(Context):
         for i in self.items:
             i.recharge(self)
 
+    def getName(self):
+        return self.name
+
     def getAttacks(self):
         '''gets the list of possible attacks for this pirate'''
         options = []

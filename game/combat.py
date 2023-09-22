@@ -44,7 +44,7 @@ class CombatAction():
         else:
             options = []
             for t in enemies:
-                options.append("attack " + t.name)
+                options.append("attack " + t.getName())
             choice = menu (options)
             return [enemies[choice]]
 
@@ -58,16 +58,16 @@ class CombatAction():
                 if moving.lucky == True:
                     roll = min(roll, random.randrange(100))
                 if roll < chosen_attk.success:
-                    announce (moving.name + " " + chosen_attk.description + " " + chosen_target.name + "!")
+                    announce (moving.getName() + " " + chosen_attk.description + " " + chosen_target.getName() + "!")
                     damage = random.randrange(chosen_attk.damage_range[0],chosen_attk.damage_range[1]+1)
-                    deathcause = "slain by a " + moving.name + "'s " + chosen_attk.name
+                    deathcause = "slain by a " + moving.getName() + "'s " + chosen_attk.name
                     chosen_target.inflict_damage(damage, deathcause)
                     if chosen_target.health <= 0:
-                        announce (chosen_target.name + " is killed!")
+                        announce (chosen_target.getName() + " is killed!")
                 elif (roll == chosen_attk.success):
-                    announce (moving.name + " barely misses " + chosen_target.name + "!")
+                    announce (moving.getName() + " barely misses " + chosen_target.getName() + "!")
                 else:
-                    announce (moving.name + " misses " + chosen_target.name + ".")
+                    announce (moving.getName() + " misses " + chosen_target.getName() + ".")
 
 class Combat():
 
@@ -79,7 +79,7 @@ class Combat():
 
     def crewmateAction(self, attacker, allies, enemies):
         """The player chooses an action for a crewmate to take."""
-        announce(attacker.name + " has seized the initiative! What should they do?",pause=False)
+        announce(attacker.getName() + " has seized the initiative! What should they do?",pause=False)
         actions = attacker.getAttacks()
         # actions = attacker.getMiscActions()
         if len(actions) > 0:
@@ -135,6 +135,9 @@ class Monster:
         if(self.health > 0):
             return False
         return True
+
+    def getName(self):
+        return self.name
 
     def pickAttack(self):
         attacks = []
