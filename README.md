@@ -1,3 +1,5 @@
+Authors: Dr. Delbert Hart, Professor of Computer Science, SUNY Plattsburgh and Dr. Christopher Morales, Assistant Professor of Computer Science, SUNY Plattsburgh.
+
 A game about a lost crew of pirates exploring the ocean, trying to find their home port.
 
 It is designed to be easily extendable, for use in a classroom context. The main extension points are 1) explorable islands and other locations and 2) events. When adding new islands and events, the student will most likely also want to add new 1) monsters and combats and/or 2) items.
@@ -16,6 +18,6 @@ To add an explorable location:
    1) Since islands are more complicated than events, you will likely need a template to work from. You can make a copy of the provided example island to get started (make sure to choose a good file and class name!).
 2) Add the file name to \_\_init__.py
 4) Add the island to the island_list list.
-5) You will also need to regularly test your island, I suggest adjusting the test islancd (testland) in world.py to be an instance of your island. The testland is always directly south of the starting point. 
+5) You will also need to regularly test your island, I suggest adjusting the test island (testland) in world.py to be an instance of your island. The testland is always directly south of the starting point. 
 
 Each sublocation in an explorable location like an island has its own event pool, so you will also likely want to add events. See island.py and its history for an example.
