@@ -11,9 +11,9 @@ class CrewMate(Context):
     '''Describes a pirate crewmate. The player controls these.'''
 
     # possible_names = ['alice', 'bob', 'charlie', 'darren', 'eliza', 'francine', 'gale', 'hope']
-    possible_names = ['anne', 'bartholomew', 'benjamin', 'po', 'eliza', 'edward', 'grace', 'henry', 'mary', 'paulsgrave', 'jack', 'turgut', 'william', 'sayyida', 'emanuel', 'peter', 'richard', 'yang']
+    possible_names = ['Anne', 'Bartholomew', 'Benjamin', 'Po', 'Eliza', 'Edward', 'Grace', 'Henry', 'Mary', 'Paulsgrave', 'Jack', 'Turgut', 'William', 'Sayyida', 'Emanuel', 'Peter', 'Richard', 'Yang']
     longest_name = max([len(c) for c in possible_names] )
-    
+
     def __init__ (self):
         super().__init__()
         self.name = random.choice (CrewMate.possible_names)
