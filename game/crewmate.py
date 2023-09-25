@@ -21,6 +21,7 @@ class CrewMate(Context):
         self.max_health = 100
         self.death_cause = "" #track cause of death for the score log
         self.health = self.max_health
+        self.hurtToday = False
         #speed and move points for combat
         self.speed = 100 + random.randrange(-20,21)
         self.cur_move = 0
@@ -69,6 +70,7 @@ class CrewMate(Context):
     def inflict_damage (self, num, deathcause):
         '''Injures the pirate. If needed, it will record the pirate's cause of death'''
         self.health = self.health - num
+        self.hurtToday = True
         if(self.health > 0):
             return False
         self.death_cause = deathcause
@@ -90,6 +92,22 @@ class CrewMate(Context):
             self.inflict_damage (1, "Died of their illness")
             if(self.health <= 0):
                 announce(self.name + " has died of their illness!")
+        elif self.hurtToday == True:
+            self.hurtToday = False
+        elif self.health < 100:
+            #Note: more serious wounds take MUCH longer to heal
+            # Try to limit the damage you take in combat!
+            if self.health >= 75:
+                self.health += random.randint(1,10)
+            elif self.health >= 50:
+                self.health += random.randint(1,6)
+            elif self.health >= 25:
+                self.health += random.randint(1,4)
+            else:
+                self.health += 1
+            #Cap at 100
+            if self.health > 100:
+                self.health = 100
         self.start_turn ()
 
     def start_turn (self):
