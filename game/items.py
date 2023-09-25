@@ -64,6 +64,14 @@ class Cutlass(Item):
         self.verb = "slash"
         self.verb2 = "slashes"
 
+class BelayingPin(Item):
+    def __init__(self):
+        super().__init__("belaying-pin", 1) #Note: price is in shillings (a silver coin, 20 per pound)
+        self.damage = (5,30)
+        self.skill = "melee"
+        self.verb = "bash"
+        self.verb2 = "bashes"
+
 class Flintlock(Item):
     def __init__(self):
         super().__init__("flintlock", 400) #Note: price is in shillings (a silver coin, 20 per pound)

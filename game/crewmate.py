@@ -28,6 +28,7 @@ class CrewMate(Context):
         self.skills = {}
         self.skills["brawling"] = random.randrange(10,101)
         self.skills["swords"] = random.randrange(10,101)
+        self.skills["melee"] = random.randrange(10,101)
         self.skills["guns"] = random.randrange(10,101)
         self.skills["cannons"] = random.randrange(10,101)
         self.skills["swimming"] = random.randrange(10,101)

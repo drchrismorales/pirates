@@ -36,6 +36,9 @@ class Player (Context):
             else:
                 itm = Cutlass()
             self.inventory.append(itm)
+        n = random.randrange(2,6)
+        for i in range (0,n):
+            self.inventory.append(BelayingPin())
         self.inventory.sort()
 
         n = random.randrange(3,7)
