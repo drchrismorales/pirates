@@ -195,8 +195,9 @@ class CrewMate(Context):
         if "brawling" in self.skills.keys():
             options.append(combat.CombatAction("punch",combat.Attack("punch", "punches", self.skills["brawling"], (1,11)), None))
         for i in self.items:
-            if i.damage[1] > 0 and i.verb != None and i.skill in self.skills.keys() and i.ready():
-                putative_attk = combat.CombatAction(i.verb + " with " + i.name, combat.Attack(i.name, i.verb2, self.skills[i.skill], i.damage), i)
-                if putative_attk not in options:
-                    options.append(putative_attk)
+            attackList = i.getAttacks(self)
+            if len(attackList) > 0:
+                for putative_attk in attackList:
+                    if putative_attk not in options:
+                        options.append(putative_attk)
         return options

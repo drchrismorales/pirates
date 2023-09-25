@@ -20,40 +20,19 @@ class Attack():
             return True
         return False
 
-class CombatAction():
-    """A more sophisticated combat action object, with a name, Attack instance, and Item instance. Resolves all combat actions. Used for monster attacks, but the added complexity over Attack alone is meant for player actions."""
-    def __init__ (self, name, attack, item):
-        self.name = name
-        self.attack = attack
-        self.item = item
+class ActionResolver():
+    def pickTargets(self, action, attacker, allies, enemies):
+        """The player should pick targets"""
+        options = []
+        for t in enemies:
+            options.append("attack " + t.getName())
+        choice = menu (options)
+        return [enemies[choice]]
 
-    def __str__ (self):
-        """To-string uses the Action's listed name"""
-        return self.name
-
-    def __eq__ (self, other):
-        """Test-equals compares the two CombatActions' Attacks"""
-        if not isinstance(other, CombatAction):
-            return False
-        return self.attack == other.attack
-
-    def pickTargets(self, attacker, allies, enemies):
-        """The player should pick targets. Passes through to the associated item if there is one, otherwise has the player pick one target"""
-        if (self.item != None):
-            return self.item.pickTargets(attacker, allies, enemies)
-        else:
-            options = []
-            for t in enemies:
-                options.append("attack " + t.getName())
-            choice = menu (options)
-            return [enemies[choice]]
-
-    def resolve(self, moving, chosen_targets):
-        """The action resolves itself, using moving and the chosen_targets"""
-        chosen_attk = self.attack
+    def resolve(self, action, moving, chosen_targets):
+        chosen_attk = action.attack
         for chosen_target in chosen_targets:
             if chosen_target != None:
-                chosen_target = chosen_targets[0]
                 roll = random.randrange(100)
                 if moving.lucky == True:
                     roll = min(roll, random.randrange(100))
@@ -68,6 +47,38 @@ class CombatAction():
                     announce (moving.getName() + " barely misses " + chosen_target.getName() + "!")
                 else:
                     announce (moving.getName() + " misses " + chosen_target.getName() + ".")
+
+class CombatAction(ActionResolver):
+    """A more sophisticated combat action object, with a name, Attack instance, and Item instance. Resolves all combat actions. Used for monster attacks, but the added complexity over Attack alone is meant for player actions."""
+    def __init__ (self, name, attack, resolver):
+        self.name = name
+        self.attack = attack
+        self.resolver = resolver
+
+    def __str__ (self):
+        """To-string uses the Action's listed name"""
+        return self.name
+
+    def __eq__ (self, other):
+        """Test-equals compares the two CombatActions' Attacks"""
+        if not isinstance(other, CombatAction):
+            return False
+        return self.attack == other.attack
+
+    def pickTargets(self, action, attacker, allies, enemies):
+        """The player should pick targets. Passes through to the associated item if there is one, otherwise has the player pick one target"""
+        if (self.resolver != None):
+            return self.resolver.pickTargets(action, attacker, allies, enemies)
+        else:
+            return super().pickTargets(action, attacker, allies, enemies)
+
+    def resolve(self, action, moving, chosen_targets):
+        """The action resolves itself, using moving and the chosen_targets"""
+        resolver = action.resolver
+        if resolver != None:
+            resolver.resolve(action, moving, chosen_targets)
+        else:
+            super().resolve(action, moving, chosen_targets)
 
 class Combat():
 
@@ -108,16 +119,14 @@ class Combat():
             if isinstance(moving, crew.CrewMate):
                 chosen_action = self.crewmateAction(moving, config.the_player.get_pirates(), self.monsters)
                 if(chosen_action != None):
-                    chosen_targets = chosen_action.pickTargets(moving, config.the_player.get_pirates(), self.monsters)
+                    chosen_targets = chosen_action.pickTargets(chosen_action, moving, config.the_player.get_pirates(), self.monsters)
             else:
                 chosen_targets = [random.choice(config.the_player.get_pirates())]
                 chosen_attk = moving.pickAttack()
                 chosen_action = CombatAction(chosen_attk.name, chosen_attk, None)
             #Resolve
-            chosen_action.resolve(moving, chosen_targets)
+            chosen_action.resolve(chosen_action, moving, chosen_targets)
             self.monsters = [m for m in self.monsters if m.health >0]
-            if chosen_action.item:
-                chosen_action.item.discharge()
             config.the_player.cleanup_items()
 
 
