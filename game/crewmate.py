@@ -193,7 +193,7 @@ class CrewMate(Context):
         '''gets the list of possible attacks for this pirate'''
         options = []
         if "brawling" in self.skills.keys():
-            options.append(combat.CombatAction("punch",combat.Attack("punch", "punches", self.skills["brawling"], (1,11)), None))
+            options.append(combat.CombatAction("punch",combat.Attack("punch", "punches", self.skills["brawling"], (1,11), False), None))
         for i in self.items:
             attackList = i.getAttacks(self)
             if len(attackList) > 0:

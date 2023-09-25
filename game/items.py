@@ -39,7 +39,7 @@ class Item(combat.ActionResolver):
     def getAttacks(self, owner):
         attacks = []
         if self.damage[1] > 0 and self.verb != None and self.skill in owner.skills.keys() and self.ready():
-            attacks.append(combat.CombatAction(self.verb + " with " + self.name, combat.Attack(self.name, self.verb2, owner.skills[self.skill], self.damage), self))
+            attacks.append(combat.CombatAction(self.verb + " with " + self.name, combat.Attack(self.name, self.verb2, owner.skills[self.skill], self.damage, self.firearm), self))
 
         return attacks
 
@@ -52,7 +52,8 @@ class Item(combat.ActionResolver):
 
     def resolve(self, action, moving, chosen_targets):
         super().resolve(action, moving, chosen_targets)
-        self.discharge()
+        if (action.attack.gunshot == True):
+            self.discharge()
 
 
 class Cutlass(Item):

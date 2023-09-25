@@ -7,11 +7,12 @@ from game.context import Context
 
 class Attack():
     """Basic attack object, with a name, description, chance of success, and damage range. Sufficient for specifying monster attacks."""
-    def __init__ (self, name, description, success, damage_range):
+    def __init__ (self, name, description, success, damage_range, gunshot):
         self.name = name
         self.description = description
         self.success = success
         self.damage_range = damage_range
+        self.gunshot = gunshot
 
     def __eq__(self, other):
         if not isinstance(other, Attack):
@@ -151,7 +152,7 @@ class Monster:
     def pickAttack(self):
         attacks = []
         for key in self.attacks.keys():
-             attacks.append(Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2]))
+             attacks.append(Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2], False))
         return random.choice(attacks)
 
 class Macaque(Monster):
