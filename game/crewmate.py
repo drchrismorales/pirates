@@ -130,6 +130,7 @@ class CrewMate(Context):
                     if config.the_player.inventory[i].name == cmd_list[1]:
                         found = config.the_player.inventory.pop(i)
                         self.items.append(found)
+                        self.items.sort()
                         break
                     i += 1
             else:
@@ -143,6 +144,7 @@ class CrewMate(Context):
                     if self.items[i].name == cmd_list[1]:
                         found = self.items.pop(i)
                         config.the_player.inventory.append(found)
+                        config.the_player.inventory.sort()
                         break
                     i += 1
             else:
