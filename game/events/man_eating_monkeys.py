@@ -25,6 +25,6 @@ class ManEatingMonkeys (event.Event):
             result["newevents"] = [ self ]
         else:
             result["newevents"] = [ ]
-        config.the_player.ship.food += n_appearing*2
-        
+        config.the_player.ship.food += n_appearing*3
+
         return result
