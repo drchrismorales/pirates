@@ -1,7 +1,5 @@
 
 import random
-from game.crewmate import *
-from game.location import *
 from game.context import Context
 from game.display import announce
 import game.config as config
@@ -90,7 +88,7 @@ class Ship (Context):
 
     def enter (self):
         pass
-        
+
     def end_day (self, world):
 
         if ((self.hx != 0) or (self.hy != 0)):

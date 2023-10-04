@@ -1,85 +1,10 @@
 import random
 import game.config as config
 import game.crewmate as crew
+import game.superclasses as superclasses
+from game.context import Context
 from game.display import announce
 from game.display import menu
-from game.context import Context
-
-class Attack():
-    """Basic attack object, with a name, description, chance of success, and damage range. Sufficient for specifying monster attacks."""
-    def __init__ (self, name, description, success, damage_range, gunshot):
-        self.name = name
-        self.description = description
-        self.success = success
-        self.damage_range = damage_range
-        self.gunshot = gunshot
-
-    def __eq__(self, other):
-        if not isinstance(other, Attack):
-            return False
-        if self.name == other.name and self.description == other.description and self.success == other.success and self.damage_range == other.damage_range:
-            return True
-        return False
-
-class ActionResolver():
-    def pickTargets(self, action, attacker, allies, enemies):
-        """The player should pick targets"""
-        options = []
-        for t in enemies:
-            options.append("attack " + t.getName())
-        choice = menu (options)
-        return [enemies[choice]]
-
-    def resolve(self, action, moving, chosen_targets):
-        chosen_attk = action.attack
-        for chosen_target in chosen_targets:
-            if chosen_target != None:
-                roll = random.randrange(100)
-                if moving.lucky == True:
-                    roll = min(roll, random.randrange(100))
-                if roll < chosen_attk.success:
-                    announce (moving.getName() + " " + chosen_attk.description + " " + chosen_target.getName() + "!")
-                    damage = random.randrange(chosen_attk.damage_range[0],chosen_attk.damage_range[1]+1)
-                    deathcause = "slain by a " + moving.getName() + "'s " + chosen_attk.name
-                    chosen_target.inflict_damage(damage, deathcause)
-                    if chosen_target.health <= 0:
-                        announce (chosen_target.getName() + " is killed!")
-                elif (roll == chosen_attk.success):
-                    announce (moving.getName() + " barely misses " + chosen_target.getName() + "!")
-                else:
-                    announce (moving.getName() + " misses " + chosen_target.getName() + ".")
-
-class CombatAction(ActionResolver):
-    """A more sophisticated combat action object, with a name, Attack instance, and Item instance. Resolves all combat actions. Used for monster attacks, but the added complexity over Attack alone is meant for player actions."""
-    def __init__ (self, name, attack, resolver):
-        self.name = name
-        self.attack = attack
-        self.resolver = resolver
-
-    def __str__ (self):
-        """To-string uses the Action's listed name"""
-        return self.name
-
-    def __eq__ (self, other):
-        """Test-equals compares the two CombatActions' Attacks"""
-        if not isinstance(other, CombatAction):
-            return False
-        return self.attack == other.attack
-
-    def pickTargets(self, action, attacker, allies, enemies):
-        """The player should pick targets. Passes through to the associated item if there is one, otherwise has the player pick one target"""
-        if (self.resolver != None):
-            return self.resolver.pickTargets(action, attacker, allies, enemies)
-        else:
-            return super().pickTargets(action, attacker, allies, enemies)
-
-    def resolve(self, action, moving, chosen_targets):
-        """The action resolves itself, using moving and the chosen_targets"""
-        resolver = action.resolver
-        if resolver != None:
-            resolver.resolve(action, moving, chosen_targets)
-        else:
-            super().resolve(action, moving, chosen_targets)
 
 class Combat():
 
@@ -91,7 +16,7 @@ class Combat():
 
     def crewmateAction(self, attacker, allies, enemies):
         """The player chooses an action for a crewmate to take."""
-        announce(attacker.getName() + " has seized the initiative! What should they do?",pause=False)
+        announce(attacker.get_name() + " has seized the initiative! What should they do?",pause=False)
         actions = attacker.getAttacks()
         # actions = attacker.getMiscActions()
         if len(actions) > 0:
@@ -124,35 +49,23 @@ class Combat():
             else:
                 chosen_targets = [random.choice(config.the_player.get_pirates())]
                 chosen_attk = moving.pickAttack()
-                chosen_action = CombatAction(chosen_attk.name, chosen_attk, None)
+                chosen_action = superclasses.CombatAction(chosen_attk.name, chosen_attk, None)
             #Resolve
             chosen_action.resolve(chosen_action, moving, chosen_targets)
             self.monsters = [m for m in self.monsters if m.health >0]
             config.the_player.cleanup_items()
 
 
-class Monster:
-    def __init__ (self, name, hp, attacks, speed):
-        self.name = name
-        self.health = hp
+class Monster(superclasses.CombatCritter):
+    def __init__ (self, name: str, hp: int, attacks: dict[str, list], speed: float):
+        super().__init__(name, hp, speed)
         self.attacks = attacks
-        self.speed = speed
         self.cur_move = 0
-        self.lucky = False
 
-    def inflict_damage (self, num, deathcause):
-        self.health = self.health - num
-        if(self.health > 0):
-            return False
-        return True
-
-    def getName(self):
-        return self.name
-
-    def pickAttack(self):
-        attacks = []
+    def pickAttack(self)->superclasses.Attack:
+        attacks: list[superclasses.Attack] = []
         for key in self.attacks.keys():
-             attacks.append(Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2], False))
+             attacks.append(superclasses.Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2], False))
         return random.choice(attacks)
 
 class Macaque(Monster):

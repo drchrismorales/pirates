@@ -1,10 +1,9 @@
 
 from game import location
-from game import config
+import game.config as config
 from game.display import announce
 from game.events import *
-from game.items import Cutlass
-from game.items import Flintlock
+import game.items as items
 
 class Island (location.Location):
 
@@ -40,7 +39,7 @@ class Beach_with_ship (location.SubLocation):
 
     def enter (self):
         announce ("arrive at the beach. Your ship is at anchor in a small bay to the south.")
-    
+
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south"):
             announce ("You return to your ship.")
@@ -63,8 +62,8 @@ class Trees (location.SubLocation):
 
         # Include a couple of items and the ability to pick them up, for demo purposes
         self.verbs['take'] = self
-        self.item_in_tree = Cutlass()
-        self.item_in_clothes = Flintlock()
+        self.item_in_tree = items.Cutlass()
+        self.item_in_clothes = items.Flintlock()
 
         self.event_chance = 50
         self.events.append(man_eating_monkeys.ManEatingMonkeys())
@@ -79,14 +78,14 @@ class Trees (location.SubLocation):
         description = "You walk into the small forest on the island."
         if edibles == False:
              description = description + " Nothing around here looks very edible."
-        
+
         #Add a couple items as a demo. This is kinda awkward but students might want to complicated things.
         if self.item_in_tree != None:
             description = description + " You see a " + self.item_in_tree.name + " stuck in a tree."
         if self.item_in_clothes != None:
             description = description + " You see a " + self.item_in_clothes.name + " in a pile of shredded clothes on the forest floor."
         announce (description)
-    
+
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
             config.the_player.next_loc = self.main_location.locations["beach"]

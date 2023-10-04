@@ -26,7 +26,7 @@ class Seagull (Context, event.Event):
                     self.seagulls = self.seagulls - 1
             else:
                 c = random.choice(config.the_player.get_pirates())
-                if (c.lucky == True):
+                if (c.isLucky() == True):
                     self.result["message"] = "luckly, the seagulls fly off."
                 else:
                     self.result["message"] = c.get_name() + " is attacked by the seagulls."

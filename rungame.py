@@ -5,7 +5,10 @@
 #         - dangers and opportunities
 #         - crew, crew's health
 
-from game import *
+import game.ship as ship
+import game.world as world
+import game.player as player
+import game.config as config
 
 ship_v     = ship.Ship()
 world_v    = world.World (ship_v)

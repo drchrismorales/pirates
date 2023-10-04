@@ -1,13 +1,15 @@
 
 from re import I
-from game.ship import *
+import game.ship as ship
+import game.crewmate as crewmate
 from game.context import Context
 import jsonpickle
 from game.display import announce
 import game.config as config
-from game.items import *
+import game.items as items
 import sys
 import datetime
+import random
 
 class Player (Context):
 
@@ -32,18 +34,18 @@ class Player (Context):
         n = random.randrange(2,6)
         for i in range (0,n):
             if random.randrange(0,10) == 0:
-                itm = Flintlock()
+                itm: items.Item = items.Flintlock()
             else:
-                itm = Cutlass()
+                itm = items.Cutlass()
             self.inventory.append(itm)
         n = random.randrange(2,6)
         for i in range (0,n):
-            self.inventory.append(BelayingPin())
+            self.inventory.append(items.BelayingPin())
         self.inventory.sort()
 
         n = random.randrange(3,7)
         for i in range (0,n):
-            c = CrewMate()
+            c = crewmate.CrewMate()
             self.pirates.append (c)
             self.nouns[c.get_name()] = c
 
@@ -301,7 +303,7 @@ class Player (Context):
                 config.the_player.add_to_inventory(c.items)
                 c.items = []
         for t in config.the_player.inventory:
-            score += t.value
+            score += t.getValue()
 
         score = score*multiplier
         f.write(now.strftime("%A %B %d, %Y") + " " + str(score) + " points\n")

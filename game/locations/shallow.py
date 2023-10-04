@@ -1,5 +1,5 @@
 
-from game.location import  *
+import game.location as location
 
-class ShallowWater (Location):
+class ShallowWater (location.Location):
     pass

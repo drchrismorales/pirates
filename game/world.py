@@ -1,16 +1,16 @@
 
-from game.location import *
+import game.location as location
 from game.locations import *
 from game.events import *
-from game.ship import *
-from game.context import Context
+import game.ship as ship
+import game.context as context
 from game.display import announce
 import game.config as config
 import game.combat as Combat
 
 import random
 
-class World (Context):
+class World (context.Context):
 
     worldsize = 25
     startx = 12
@@ -24,8 +24,8 @@ class World (Context):
         for i in range (0, World.worldsize):
             self.locs.append([])
             for j in range (0, World.worldsize):
-                self.locs[i].append(Location(i, j, self))
-        
+                self.locs[i].append(location.Location(i, j, self))
+
         self.homex = random.randrange (1,World.worldsize-2)
         self.homey = random.randrange (1,World.worldsize-2)
         #Home port can't be within a 4x4 square of the start location
@@ -70,7 +70,7 @@ class World (Context):
     def start_day (self):
         self.day = self.day + 1
 #        announce ("starting day " + str(self.day))
-        
+
         if self.day > 1:
             num_events = random.randint (0,2)
             random.shuffle (self.events)
@@ -82,7 +82,7 @@ class World (Context):
                 for e in results["newevents"]:
                     self.events.append(e)
                 announce ("----------------------",pause=False)
-        
+
         # ship knows where it is
         action = self.ship.start_day(self)
         for i in range (0, World.worldsize):
@@ -92,7 +92,7 @@ class World (Context):
 
     def end_day (self):
 #        announce ("ending day " + str(self.day))
-        
+
         # ship knows where it is
         action = self.ship.end_day(self)
         for i in range (0, World.worldsize):

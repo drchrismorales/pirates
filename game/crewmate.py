@@ -1,29 +1,27 @@
 
 import random
 import game.combat as combat
+import game.superclasses as superclasses
 from game.display import announce
-from game.items import *
+import game.items as items
 from game.context import Context
-from game import config
+import game.config as config
 
 
-class CrewMate(Context):
+class CrewMate(Context, superclasses.CombatCritter):
     '''Describes a pirate crewmate. The player controls these.'''
 
     # possible_names = ['alice', 'bob', 'charlie', 'darren', 'eliza', 'francine', 'gale', 'hope']
     possible_names = ['Anne', 'Bartholomew', 'Benjamin', 'Po', 'Eliza', 'Edward', 'Grace', 'Henry', 'Mary', 'Paulsgrave', 'Jack', 'Turgut', 'William', 'Sayyida', 'Emanuel', 'Peter', 'Richard', 'Yang']
     longest_name = max([len(c) for c in possible_names] )
 
-    def __init__ (self):
-        super().__init__()
-        self.name = random.choice (CrewMate.possible_names)
-        CrewMate.possible_names.remove (self.name)
+    def __init__ (self)->None:
         self.max_health = 100
+        Context.__init__(self)
+        superclasses.CombatCritter.__init__(self, random.choice (CrewMate.possible_names), self.max_health, 100 + random.randrange(-20,21))
+        CrewMate.possible_names.remove (self.name)
         self.death_cause = "" #track cause of death for the score log
-        self.health = self.max_health
         self.hurtToday = False
-        #speed and move points for combat
-        self.speed = 100 + random.randrange(-20,21)
         self.cur_move = 0
         #dictionary of skill success rates (in percent). Currently only used in combat.
         self.skills = {}
@@ -36,8 +34,8 @@ class CrewMate(Context):
 
         #list of equipped items. Currently only used in combat.
         self.items = []
-        self.items.append(Cutlass())
-        self.items.append(Flintlock())
+        self.items.append(items.Cutlass())
+        self.items.append(items.Flintlock())
         self.powder = 32
 
         #Status effects
@@ -54,9 +52,6 @@ class CrewMate(Context):
     def __str__ (self):
         '''to string. Lists name and death cause (for score log)'''
         return self.name + " " + self.death_cause
-
-    def get_name (self):
-        return self.name
 
     def get_health (self):
         return self.health
@@ -117,7 +112,7 @@ class CrewMate(Context):
     def end_day (self):
         '''End of day activities (days only occur while sailing on the ship)'''
         if (self.sick):
-            if (self.lucky == True or random.randint(1,10) == 1):
+            if (self.isLucky() == True or random.randint(1,10) == 1):
                 self.sick = False
         self.lucky = False
 
@@ -126,7 +121,7 @@ class CrewMate(Context):
         outstring = "   " + self.name + " Health: " + str(self.health)
         if (self.sick):
             outstring = outstring + " --Sick"
-        if (self.lucky):
+        if (self.isLucky()):
             outstring = outstring + " ++Lucky"
 
         print (outstring)
@@ -199,6 +194,11 @@ class CrewMate(Context):
             config.the_player.powder = 0
         if restock_needed == 0:
             announce (self.name + " doesn't need a restock!")
+        elif config.the_player.powder == 0:
+            if restock_needed < (32 - self.powder):
+                announce (self.name + " takes the last powder!")
+            else:
+                announce (self.name + " reports that the ship is out of powder!")
         else:
             announce (self.name + " restocks their powder and shot!")
 
@@ -207,14 +207,11 @@ class CrewMate(Context):
         for i in self.items:
             i.recharge(self)
 
-    def getName(self):
-        return self.name
-
     def getAttacks(self):
         '''gets the list of possible attacks for this pirate'''
         options = []
         if "brawling" in self.skills.keys():
-            options.append(combat.CombatAction("punch",combat.Attack("punch", "punches", self.skills["brawling"], (1,11), False), None))
+            options.append(superclasses.CombatAction("punch",superclasses.Attack("punch", "punches", self.skills["brawling"], (1,11), False), self))
         for i in self.items:
             attackList = i.getAttacks(self)
             if len(attackList) > 0:

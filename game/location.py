@@ -1,5 +1,5 @@
 from game.context import Context
-from game import config
+import game.config as config
 from game.display import *
 import random
 

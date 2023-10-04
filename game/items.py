@@ -1,8 +1,9 @@
 from game.display import menu
 import game.combat as combat
+import game.superclasses as superclasses
 import random
 
-class Item(combat.ActionResolver):
+class Item(superclasses.ActionResolver):
     def __init__(self, name, value):
         super().__init__()
         self.name = name
@@ -16,12 +17,12 @@ class Item(combat.ActionResolver):
         self.verb2 = None
 
     def __str__(self):
-        return self.name + " (" + str(self.value) + " shillings)"
+        return self.name + " (" + str(self.getValue()) + " shillings)"
 
     def __lt__(self, other):
         return self.name < other.name
 
-    def value(self):
+    def getValue(self)->int:
         return self.value
 
     def ready(self):
@@ -38,8 +39,8 @@ class Item(combat.ActionResolver):
 
     def getAttacks(self, owner):
         attacks = []
-        if self.damage[1] > 0 and self.verb != None and self.skill in owner.skills.keys() and self.ready():
-            attacks.append(combat.CombatAction(self.verb + " with " + self.name, combat.Attack(self.name, self.verb2, owner.skills[self.skill], self.damage, self.firearm), self))
+        if self.damage[1] > 0 and not self.verb is None and not self.verb2 is None and self.skill in owner.skills.keys() and self.ready():
+            attacks.append(superclasses.CombatAction(self.verb + " with " + self.name, superclasses.Attack(self.name, self.verb2, owner.skills[self.skill], self.damage, self.firearm), self))
 
         return attacks
 

@@ -13,7 +13,7 @@ class Sickness(event.Event):
         result = {}
         if (c.sick == True):
             c.set_sickness (True)
-            if (c.lucky == True):
+            if (c.isLucky() == True):
                 damage = 1
                 deathcause = "died of their illness"
             else:
@@ -26,7 +26,7 @@ class Sickness(event.Event):
             else:
                 result["message"] = c.get_name() + " has taken a turn for the worse"
                 result["newevents"] = [ self, self ]
-        elif (c.lucky == False):
+        elif (c.isLucky() == False):
             c.set_sickness (True)
             result["message"] = c.get_name() + " has gotten sick"
             result["newevents"] = [ self, self ]
