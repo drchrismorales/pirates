@@ -15,7 +15,7 @@ class CrewMate(Context, superclasses.CombatCritter):
     possible_names = ['Anne', 'Bartholomew', 'Benjamin', 'Po', 'Eliza', 'Edward', 'Grace', 'Henry', 'Mary', 'Paulsgrave', 'Jack', 'Turgut', 'William', 'Sayyida', 'Emanuel', 'Peter', 'Richard', 'Yang']
     longest_name = max([len(c) for c in possible_names] )
 
-    def __init__ (self)->None:
+    def __init__ (self):
         self.max_health = 100
         Context.__init__(self)
         superclasses.CombatCritter.__init__(self, random.choice (CrewMate.possible_names), self.max_health, 100 + random.randrange(-20,21))

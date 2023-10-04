@@ -7,7 +7,7 @@ class Location:
     '''A map location. May own explorable sub-locations'''
     symbols = [' ', '*', '-']
 
-    def __init__(self, x, y, w) -> None:
+    def __init__(self, x, y, w):
         self.x = x
         self.y = y
         self.world = w
@@ -15,7 +15,7 @@ class Location:
         self.name = 'ocean'
         #by default, not visitable
         self.visitable = False
-    
+
     def get_x(self):
         return self.x
     def get_y(self):
@@ -71,7 +71,7 @@ class SubLocation(Context):
         self.event_chance = 0
         #The events that may occur in this sub-location
         self.events = []
-    
+
     def start_turn(self):
         #Maybe draw an event (if there are events and the event chance is rolled)
         if len(self.events) > 0 and self.event_chance > random.randrange(100):
@@ -83,4 +83,3 @@ class SubLocation(Context):
             for e in results["newevents"]:
                 self.events.append(e)
             announce ("----------------------",pause=False)
-    

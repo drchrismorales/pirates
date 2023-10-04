@@ -62,8 +62,8 @@ class Monster(superclasses.CombatCritter):
         self.attacks = attacks
         self.cur_move = 0
 
-    def pickAttack(self)->superclasses.Attack:
-        attacks: list[superclasses.Attack] = []
+    def pickAttack(self):
+        attacks = []
         for key in self.attacks.keys():
              attacks.append(superclasses.Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2], False))
         return random.choice(attacks)

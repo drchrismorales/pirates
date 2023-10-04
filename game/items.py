@@ -22,7 +22,7 @@ class Item(superclasses.ActionResolver):
     def __lt__(self, other):
         return self.name < other.name
 
-    def getValue(self)->int:
+    def getValue(self):
         return self.value
 
     def ready(self):
