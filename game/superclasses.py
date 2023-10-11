@@ -66,6 +66,9 @@ class CombatCritter(ActionResolver):
             return False
         return True
 
+    def getAttacks(self):
+        return []
+
 class CombatAction(ActionResolver):
     """A more sophisticated combat action object, with a name, Attack instance, and Item instance. Resolves all combat actions. Used for monster attacks, but the added complexity over Attack alone is meant for player actions."""
     def __init__ (self, name, attack, resolver):
