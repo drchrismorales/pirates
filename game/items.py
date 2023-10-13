@@ -53,8 +53,9 @@ class Item(superclasses.ActionResolver):
 
     def resolve(self, action, moving, chosen_targets):
         super().resolve(action, moving, chosen_targets)
-        if (action.attack.gunshot == True):
-            self.discharge()
+        if(isinstance(action.action, superclasses.Attack)):
+            if (action.action.gunshot == True):
+                self.discharge()
 
 
 class Cutlass(Item):

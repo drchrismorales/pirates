@@ -49,6 +49,12 @@ class CrewMate(Context, superclasses.CombatCritter):
         self.verbs['restock'] = self
         self.verbs['skills'] = self
 
+        #List of defenders
+        self.defenders = []
+
+        #List of defendees
+        self.defendees = []
+
     def __str__ (self):
         '''to string. Lists name and death cause (for score log)'''
         return self.name + " " + self.death_cause
@@ -62,14 +68,37 @@ class CrewMate(Context, superclasses.CombatCritter):
             self.sick = False
             announce (self.name + " takes the medicine and is no longer sick!")
 
-    def inflict_damage (self, num, deathcause):
+    def inflict_damage (self, num, deathcause, combat=False):
         '''Injures the pirate. If needed, it will record the pirate's cause of death'''
+        if combat and len(self.defenders) > 0:
+            defender = random.choice (self.defenders)
+            announce (f"{defender.name} blocks the attack!")
+            return defender.inflict_damage ((num+1)//2, deathcause, False) #Combat should be false here to avoid possible infinite recursion.
+        #else:
         self.health = self.health - num
         self.hurtToday = True
         if(self.health > 0):
-            return False
+            return None
         self.death_cause = deathcause
-        return True
+        for d in self.defendees:
+            d.removeDefender(self)
+        self.defendees = []
+        for d in self.defenders:
+            d.removeDefendee(self)
+        self.defenders = []
+        return self
+
+    def addDefender(self, defender):
+        self.defenders.append(defender)
+
+    def addDefendee(self, defendee):
+        self.defendees.append(defendee)
+
+    def removeDefender(self, defender):
+        self.defenders = [d for d in self.defenders if d != defender]
+
+    def removeDefendee(self, defendee):
+        self.defendees = [d for d in self.defendees if d != defendee]
 
     def get_hunger (self):
         '''Sick pirates need more food.'''
@@ -209,13 +238,17 @@ class CrewMate(Context, superclasses.CombatCritter):
 
     def getAttacks(self):
         '''gets the list of possible attacks for this pirate'''
+        for d in self.defendees:
+            d.removeDefender(self)
+        self.defendees = []
         options = []
-        if "brawling" in self.skills.keys():
-            options.append(superclasses.CombatAction("punch",superclasses.Attack("punch", "punches", self.skills["brawling"], (1,11), False), self))
         for i in self.items:
             attackList = i.getAttacks(self)
             if len(attackList) > 0:
                 for putative_attk in attackList:
                     if putative_attk not in options:
                         options.append(putative_attk)
+        if "brawling" in self.skills.keys():
+            options.append(superclasses.CombatAction("punch",superclasses.Attack("punch", "punches", self.skills["brawling"], (1,11), False), self))
+        options.append(superclasses.CombatAction("defend",superclasses.Defend("defend", "defends"), self))
         return options
