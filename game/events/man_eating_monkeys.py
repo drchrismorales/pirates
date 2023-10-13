@@ -6,6 +6,12 @@ from game.display import announce
 import game.config as config
 
 class ManEatingMonkeys (event.Event):
+    '''
+    A combat encounter with a troop of man eating monkies.
+    When the event is drawn, creates a combat encounter with 4 to 8 monkies, kicks control over to the combat code to resolve the fight.
+    The monkies are "edible", which is modeled by increasing the ship's food by 3 per monkey appearing and adding an apropriate message to the result.
+        Since food is good, the event only has a 50% chance to add itself to the result.
+    '''
 
     def __init__ (self):
         self.name = " monkey attack"

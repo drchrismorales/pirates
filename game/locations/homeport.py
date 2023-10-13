@@ -5,7 +5,7 @@ from game.display import announce
 from game.player import Player
 
 class HomePort (location.Location):
-
+    '''The home the pirates are attempting to find. Visiting this location ends the game.'''
     def __init__ (self, x, y, w):
         super().__init__(x, y, w)
         self.name = "destination"

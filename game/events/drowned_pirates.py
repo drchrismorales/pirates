@@ -5,11 +5,16 @@ import game.superclasses as superclasses
 from game.display import announce
 
 class DrownedPirates (event.Event):
+    '''
+    A combat encounter with a crew of drowned pirate zombies.
+    When the event is drawn, creates a combat encounter with 2 to 6 drowned pirates, kicks control over to the combat code to resolve the fight, then adds itself and a simple success message to the result
+    '''
 
     def __init__ (self):
         self.name = " drowed pirate attack"
 
     def process (self, world):
+        '''Process the event. Populates a combat with Drowned monsters. The first Drowned may be modified into a "Pirate captain" by buffing its speed and health.'''
         result = {}
         result["message"] = "the drowned pirates are defeated!"
         monsters = []
