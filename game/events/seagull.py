@@ -5,7 +5,7 @@ import game.config as config
 import random
 
 class Seagull (Context, event.Event):
-
+    '''Encounter with an annoying seagull. Uses the parser to decide what to do about it.'''
     def __init__ (self):
         super().__init__()
         self.name = "seagull visitor"
