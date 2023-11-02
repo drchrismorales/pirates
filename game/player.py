@@ -66,6 +66,28 @@ class Player (Context):
             for j in range (0, self.world.worldsize):
                 self.seen[i].append(False)
 
+    def save_game(self):
+        if "jsonpickle" not in sys.modules:
+            announce ("jsonpickle hasn't be imported. Saving is impossible.")
+        elif self.location != self.ship:
+            announce ("Saving is only possible abord ship.")
+        else:
+            announce ("saving...", end="",pause=False)
+            f = open ("save.json", "w")
+            f.write (jsonpickle.encode (self))
+            f.close()
+            announce ("..done")
+
+    def load_game(self):
+            if "jsonpickle" not in sys.modules:
+                announce ("jsonpickle hasn't be imported. Loading is impossible.")
+            elif self.location != self.ship:
+                announce ("Loading is only possible abord ship.")
+            else:
+                with open ("save.json") as f:
+                    s = f.read()
+                config.the_player = jsonpickle.decode (s)
+                self.go = True
 
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "quit"):
@@ -87,26 +109,11 @@ class Player (Context):
             for c in self.get_pirates():
                 c.print_skills ()
         elif (verb == "save"):
-            if "jsonpickle" not in sys.modules:
-                announce ("jsonpickle hasn't be imported. Saving is impossible.")
-            elif self.location != self.ship:
-                announce ("Saving is only possible abord ship.")
-            else:
-                announce ("saving...", end="",pause=False)
-                f = open ("save.json", "w")
-                f.write (jsonpickle.encode (self))
-                f.close()
-                announce ("..done")
+            self.save_game()
+
         elif (verb == "load"):
-            if "jsonpickle" not in sys.modules:
-                announce ("jsonpickle hasn't be imported. Loading is impossible.")
-            elif self.location != self.ship:
-                announce ("Loading is only possible abord ship.")
-            else:
-                with open ("save.json") as f:
-                    s = f.read()
-                config.the_player = jsonpickle.decode (s)
-                self.go = True
+            self.load_game()
+
         elif (verb == "status"):
             announce ("Day " + str(self.world.get_day()),pause=False)
             self.status()
