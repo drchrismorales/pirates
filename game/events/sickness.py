@@ -22,14 +22,14 @@ class Sickness(event.Event):
             died = c.inflict_damage (damage, deathcause)
             if(died == True):
                 result["message"] = c.get_name() + " took a turn for the worse and has died of their illness"
-                result["newevents"] = [ self, self, self ]
+                result["newevents"] = [ self, Sickness(), Sickness() ]
             else:
                 result["message"] = c.get_name() + " has taken a turn for the worse"
-                result["newevents"] = [ self, self ]
+                result["newevents"] = [ self, Sickness() ]
         elif (c.isLucky() == False):
             c.set_sickness (True)
             result["message"] = c.get_name() + " has gotten sick"
-            result["newevents"] = [ self, self ]
+            result["newevents"] = [ self, Sickness() ]
         else:
             result["message"] = c.get_name() + " felt a bit sick"
             result["newevents"] = [ self ]
