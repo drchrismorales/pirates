@@ -54,6 +54,10 @@ class World (context.Context):
         testland = island.Island (self.startx, self.starty+1, self)
         self.locs[self.startx][self.starty+1] = testland
 
+        # Peaceful island directly to the right of the spawning location.
+        peacefulIsland = PeacefulIsland.PeacefulIsland(self.startx + 1, self.starty, self)
+        self.locs[self.startx + 1][self.starty] = peacefulIsland
+
         self.events = []
         self.events.append (lucky.LuckyDay())
         self.events.append (nothing.Nothing())
