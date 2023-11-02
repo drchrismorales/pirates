@@ -1,11 +1,13 @@
 from game.display import menu
 import game.combat as combat
+import game.context as context
 import game.superclasses as superclasses
 import random
 
-class Item(superclasses.ActionResolver):
+class Item(superclasses.ActionResolver, context.Context):
     def __init__(self, name, value):
-        super().__init__()
+        superclasses.ActionResolver.__init__(self)
+        context.Context.__init__(self)
         self.name = name
         self.value = value
         self.damage = (0,0)
