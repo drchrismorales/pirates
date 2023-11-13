@@ -13,10 +13,11 @@ class Settled_Island(location.Island):
         self.starting_location = Docks() #Insert Starting Location Here
         self.locations = {}
         self.locations["docks"] = self.starting_location
-        self.locations["wharf"] = None #Add sublocation obj here
+        self.locations["wharf"] = Wharf() #Add sublocation obj here
         self.locations["beach"] = None #Add sublocation obj here
         self.locations["woods"] = None #Add sublocation obj here
         self.locations["logging camp"] = None #Add sublocation obj here
+        #might make a seperate import for these locations
         self.locations["town"] = None #Add sublocation obj here
         self.locations["tavern"] = None #Add sublocation obj here
         self.locations["casino"] = None #Add sublocation obj here
@@ -32,13 +33,28 @@ class Settled_Island(location.Island):
 
 class Docks (location.SubLocation):
     def __init__(self,m):
-        super().__init__(m):
+        super().__init__(m)
         self.name="docks"
         self.verbs['north'] = self
-        self.verbs['south']
-        self.verbs['east']
-        self.verbs['south']
+        self.verbs['south'] = self
+        self.verbs['east'] = self
+        self.verbs['south'] = self
         self.event_chance = 0
 
     def enter(self):
-        announce()
+        announce("thing that announces entry")
+    
+    def process_verb (self,verb,cmd_list, nouns):
+        if verb == "south":
+            announce ("You return to your ship.")
+            config.the_player.next_loc = config.the_player.ship
+            config.the_player.visiting = False
+        elif verb == "north":
+            config.the_player.next_loc = self.main_location.locations["wharf"]
+        elif (verb == "east") or (verb == "east"):
+            config.the_player.next_loc = self.main_location.locations["beach"]
+
+class Wharf (location.SubLocation):
+    def __init__(self,m):
+        super().__init__(m)
+        self.name = "wharf"
