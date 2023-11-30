@@ -12,7 +12,7 @@ class MysteriousIsland (location.Location):
         self.name = "mysterious island"
         self.symbol = 'I'
         self.visitable = True
-        self.starting_location = (self.Beach)
+        self.starting_location = (Beach(self))
         self.locations = {}
 
         # Surface (starting point)
@@ -23,9 +23,9 @@ class MysteriousIsland (location.Location):
         # Inside temple
         self.locations["temple_entrance"] = Temple_Entrance(self)
         self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
+        self.locations["cult_room"] = Nave(self)
+        self.locations['puzzle_room'] = Vestibule(self)
+        self.locations['sanctuary'] = Sanctuary(self)
 
 
     def enter (self, ship):
@@ -41,76 +41,64 @@ class Beach (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
         self.name = "beach"
-        self.verbs['north'] = self
-        self.verbs['west'] = self
-        self.verbs['ship'] = self
+        self.verbs['go'] = self
+        self.nouns['north'] = self
+        self.nouns['west'] = self
+        self.nouns['ship'] = self
+        self.verbs['exit'] = self
         self.event_chance = 50
         self.events.append (seagull.Seagull())
 
     def enter (self):
-        announce ("arrive at the beach. Your ship is at anchor in a small bay to the east.")
+        announce ("You are on the beach. Your ship is anchored to the dock.")
 
     def process_verb (self, verb, cmd_list, nouns):
-        if (verb == "ship"):
-            announce ("You return to your ship.")
-            config.the_player.next_loc = config.the_player.ship
-            config.the_player.visiting = False
-        elif (verb == "north"):
-            config.the_player.next_loc = self.main_location.locations["cliff"]
-        elif (verb == "west"):
-            config.the_player.next_loc = self.main_location.locations["ruins"]
+        if (verb == "go"):
+            print(nouns)
+            if 'ship' in nouns or 'exit' in nouns:
+                config.the_player.next_loc = config.the_player.ship
+                config.the_player.visiting = False
+            elif 'west' in nouns:
+                config.the_player.next_loc = self.main_location.locations["ruins"]
+            elif 'cliff' in nouns: 
+                config.the_player.next_loc = self.main_location.locations["cliff"]
+            else:
+                print(nouns)
+
+        else:
+            announce("Command not recognized.")
 
 
 class Cliff (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
-        self.name = "trees"
+        self.name = "cliff"
         self.verbs['go'] = self
         self.verbs['take'] = self
         self.nouns['south'] = self
+        self.nouns['ladder'] = self
 
-        # Include a couple of items and the ability to pick them up, for demo purposes
 
     def enter (self):
-        description = "You ascend the cliff to the north. "
-        #Add a couple items as a demo. This is kinda awkward but students might want to complicated things.
+        description = "You ascend the cliff to the north."
         announce (description)
 
     def process_verb (self, verb, cmd_list, nouns):
         print(nouns)
+        print(cmd_list)
         if verb == "south":
             config.the_player.next_loc = self.main_location.locations["beach"]
-        #Handle taking items. Demo both "take cutlass" and "take all"
-        if verb == "take":
-            if self.item_in_tree == None and self.item_in_clothes == None:
-                announce ("You don't see anything to take.")
-            elif len(cmd_list) > 1:
-                at_least_one = False #Track if you pick up an item, print message if not.
-                item = self.item_in_tree
-                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
-                    announce ("You take the "+item.name+" from the tree.")
-                    config.the_player.add_to_inventory([item])
-                    self.item_in_tree = None
-                    config.the_player.go = True
-                    at_least_one = True
-                item = self.item_in_clothes
-                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
-                    announce ("You pick up the "+item.name+" out of the pile of clothes. ...It looks like someone was eaten here.")
-                    config.the_player.add_to_inventory([item])
-                    self.item_in_clothes = None
-                    config.the_player.go = True
-                    at_least_one = True
-                if at_least_one == False:
-                    announce ("You don't see one of those around.")
+        if verb == 'ladder':
+            announce('You don\'t see a ladder.')
 
 
 class Ruins (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
-        self.name = "trees"
+        self.name = "ruins"
         self.verbs['go'] = self
-        self.verbs['take'] = self
-        self.nouns['south'] = self
+        self.nouns['ruins'] = self
+        self.nouns['east'] = self
 
         # Include a couple of items and the ability to pick them up, for demo purposes
 
@@ -120,9 +108,9 @@ class Ruins (location.SubLocation):
             if isinstance(e, man_eating_monkeys.ManEatingMonkeys):
                 edibles = True
         #The description has a base description, followed by variable components.
-        description = "You walk into the small forest on the island."
-        if edibles == False:
-             description = description + " Nothing around here looks very edible."
+        description = "An abandoned town presides here."
+
+        #TODO: add check for user coming from the dungeon for the first time.
 
         #Add a couple items as a demo. This is kinda awkward but students might want to complicated things.
         announce (description)
@@ -158,14 +146,16 @@ class Ruins (location.SubLocation):
 class Temple_Entrance (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
-        self.name = "trees"
+        self.name = "vestibule"
         self.verbs['go'] = self
-        self.verbs['take'] = self
-        self.nouns['south'] = self
-
+        self.nouns['left'] = self
+        self.nouns['right'] = self
+        self.nouns['crypt'] = self
+        self.nouns['chamber'] = self
         # Include a couple of items and the ability to pick them up, for demo purposes
 
     def enter (self):
+
         announce (description)
 
     def process_verb (self, verb, cmd_list, nouns):
@@ -197,153 +187,167 @@ class Temple_Entrance (location.SubLocation):
 
 
 class Crypt(location.SubLocation):
-    def __init__ (self, x, y, w):
-        super().__init__(x, y, w)
-        self.name = "mysterious island"
-        self.symbol = 'I'
-        self.visitable = True
-        self.starting_location = (self.Beach)
-        self.locations = {}
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "crypt"
+        self.verbs['go'] = self
+        self.verbs['back'] = self
+        self.verbs['vestibule'] = self
 
-        # Surface (starting point)
-        self.locations["beach"] = self.starting_location
-        self.locations["cliff"] = Cliff(self)
-        self.locations["ruins"] = Ruins(self)
+    def enter (self):
+        description = "TODO"
+        announce (description)
 
-        # Inside temple
-        self.locations["temple_entrance"] = Temple_Entrance(self)
-        self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
-
-
-    def enter (self, ship):
-        print ("arrived at an island")
-
-    def visit (self):
-        config.the_player.location = self.starting_location
-        config.the_player.location.enter()
-        super().visit()
-
-    def __init__ (self, x, y, w):
-        super().__init__(x, y, w)
-        self.name = "mysterious island"
-        self.symbol = 'I'
-        self.visitable = True
-        self.starting_location = (self.Beach)
-        self.locations = {}
-
-        # Surface (starting point)
-        self.locations["beach"] = self.starting_location
-        self.locations["cliff"] = Cliff(self)
-        self.locations["ruins"] = Ruins(self)
-
-        # Inside temple
-        self.locations["temple_entrance"] = Temple_Entrance(self)
-        self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
+    def process_verb (self, verb, cmd_list, nouns):
+        print(nouns)
+        if verb == "south":
+            config.the_player.next_loc = self.main_location.locations["beach"]
+        #Handle taking items. Demo both "take cutlass" and "take all"
+        if verb == "take":
+            if self.item_in_tree == None and self.item_in_clothes == None:
+                announce ("You don't see anything to take.")
+            elif len(cmd_list) > 1:
+                at_least_one = False #Track if you pick up an item, print message if not.
+                item = self.item_in_tree
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You take the "+item.name+" from the tree.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_tree = None
+                    config.the_player.go = True
+                    at_least_one = True
+                item = self.item_in_clothes
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You pick up the "+item.name+" out of the pile of clothes. ...It looks like someone was eaten here.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_clothes = None
+                    config.the_player.go = True
+                    at_least_one = True
+                if at_least_one == False:
+                    announce ("You don't see one of those around.")
 
 
-    def enter (self, ship):
-        print ("arrived at an island")
+class Vestibule(location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "vestibule"
+        self.verbs['go'] = self
+        self.nouns['left'] = self
+        self.nouns['right'] = self
+        self.nouns['chamber'] = self
 
-    def visit (self):
-        config.the_player.location = self.starting_location
-        config.the_player.location.enter()
-        super().visit()
+    def enter (self):
+        description = "TODO"
+        announce (description)
 
-
-class Cult_Room(location.SubLocation):
-    def __init__ (self, x, y, w):
-        super().__init__(x, y, w)
-        self.name = "mysterious island"
-        self.symbol = 'I'
-        self.visitable = True
-        self.starting_location = (self.Beach)
-        self.locations = {}
-
-        # Surface (starting point)
-        self.locations["beach"] = self.starting_location
-        self.locations["cliff"] = Cliff(self)
-        self.locations["ruins"] = Ruins(self)
-
-        # Inside temple
-        self.locations["temple_entrance"] = Temple_Entrance(self)
-        self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
-
-
-    def enter (self, ship):
-        print ("arrived at an island")
-
-    def visit (self):
-        config.the_player.location = self.starting_location
-        config.the_player.location.enter()
-        super().visit()
-
-
-class Puzzle_Room(location.SubLocation):
-    def __init__ (self, x, y, w):
-        super().__init__(x, y, w)
-        self.name = "mysterious island"
-        self.symbol = 'I'
-        self.visitable = True
-        self.starting_location = (self.Beach)
-        self.locations = {}
-
-        # Surface (starting point)
-        self.locations["beach"] = self.starting_location
-        self.locations["cliff"] = Cliff(self)
-        self.locations["ruins"] = Ruins(self)
-
-        # Inside temple
-        self.locations["temple_entrance"] = Temple_Entrance(self)
-        self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
+    def process_verb (self, verb, cmd_list, nouns):
+        print(nouns)
+        if verb == "south":
+            config.the_player.next_loc = self.main_location.locations["beach"]
+        #Handle taking items. Demo both "take cutlass" and "take all"
+        if verb == "take":
+            if self.item_in_tree == None and self.item_in_clothes == None:
+                announce ("You don't see anything to take.")
+            elif len(cmd_list) > 1:
+                at_least_one = False #Track if you pick up an item, print message if not.
+                item = self.item_in_tree
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You take the "+item.name+" from the tree.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_tree = None
+                    config.the_player.go = True
+                    at_least_one = True
+                item = self.item_in_clothes
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You pick up the "+item.name+" out of the pile of clothes. ...It looks like someone was eaten here.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_clothes = None
+                    config.the_player.go = True
+                    at_least_one = True
+                if at_least_one == False:
+                    announce ("You don't see one of those around.")
 
 
-    def enter (self, ship):
-        print ("arrived at an island")
+class Nave(location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "nave"
+        self.verbs['go'] = self
+        self.nouns['vestibule'] = self
+        self.nouns['back'] = self
+        self.nouns['vestibule'] = self
 
-    def visit (self):
-        config.the_player.location = self.starting_location
-        config.the_player.location.enter()
-        super().visit()
+        # Include a couple of items and the ability to pick them up, for demo purposes
+
+    def enter (self):
+        description = "TODO"
+        announce (description)
+
+    def process_verb (self, verb, cmd_list, nouns):
+        print(nouns)
+        if verb == "south":
+            config.the_player.next_loc = self.main_location.locations["beach"]
+        #Handle taking items. Demo both "take cutlass" and "take all"
+        if verb == "take":
+            if self.item_in_tree == None and self.item_in_clothes == None:
+                announce ("You don't see anything to take.")
+            elif len(cmd_list) > 1:
+                at_least_one = False #Track if you pick up an item, print message if not.
+                item = self.item_in_tree
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You take the "+item.name+" from the tree.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_tree = None
+                    config.the_player.go = True
+                    at_least_one = True
+                item = self.item_in_clothes
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You pick up the "+item.name+" out of the pile of clothes. ...It looks like someone was eaten here.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_clothes = None
+                    config.the_player.go = True
+                    at_least_one = True
+                if at_least_one == False:
+                    announce ("You don't see one of those around.")
 
 
-class Treasure_Stash(location.SubLocation):
-    def __init__ (self, x, y, w):
-        super().__init__(x, y, w)
-        self.name = "mysterious island"
-        self.symbol = 'I'
-        self.visitable = True
-        self.starting_location = (self.Beach)
-        self.locations = {}
-
-        # Surface (starting point)
-        self.locations["beach"] = self.starting_location
-        self.locations["cliff"] = Cliff(self)
-        self.locations["ruins"] = Ruins(self)
-
-        # Inside temple
-        self.locations["temple_entrance"] = Temple_Entrance(self)
-        self.locations["crypt"] = Crypt(self)
-        self.locations["cult_room"] = Cult_Room(self)
-        self.locations['puzzle_room'] = Puzzle_Room(self)
-        self.locations['treasure_stash'] = Treasure_Stash(self)
+class Sanctuary(location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "sanctuary"
+        self.verbs['go'] = self
+        self.nouns['up'] = self
+        self.nouns['ladder'] = self
+        self.nouns['back'] = self
+        self.nouns['nave'] = self
 
 
-    def enter (self, ship):
-        print ("arrived at an island")
+    def enter (self):
+        description = "TODO"
+        announce (description)
 
-    def visit (self):
-        config.the_player.location = self.starting_location
-        config.the_player.location.enter()
-        super().visit()
+    def process_verb (self, verb, cmd_list, nouns):
+        print(nouns)
+        if verb == "south":
+            config.the_player.next_loc = self.main_location.locations["beach"]
+        #Handle taking items. Demo both "take cutlass" and "take all"
+        if verb == "take":
+            if self.item_in_tree == None and self.item_in_clothes == None:
+                announce ("You don't see anything to take.")
+            elif len(cmd_list) > 1:
+                at_least_one = False #Track if you pick up an item, print message if not.
+                item = self.item_in_tree
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You take the "+item.name+" from the tree.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_tree = None
+                    config.the_player.go = True
+                    at_least_one = True
+                item = self.item_in_clothes
+                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
+                    announce ("You pick up the "+item.name+" out of the pile of clothes. ...It looks like someone was eaten here.")
+                    config.the_player.add_to_inventory([item])
+                    self.item_in_clothes = None
+                    config.the_player.go = True
+                    at_least_one = True
+                if at_least_one == False:
+                    announce ("You don't see one of those around.")
