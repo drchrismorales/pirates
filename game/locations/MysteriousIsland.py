@@ -5,6 +5,10 @@ from game.events import *
 import game.items as items
 
 
+import game.combat as combat
+import game.event as event
+import random
+
 class MysteriousIsland(location.Location):
     def __init__(self, x, y, w):
         super().__init__(x, y, w)
@@ -278,7 +282,7 @@ class Vestibule(location.SubLocation):
         self.door_open = False
 
     def enter(self):
-        description = "You walk into the vestibule. On the far side of the room there is a sealed door. "
+        description = "You walk into the vestibule. On the far side of the room there is a sealed door."
         announce(description)
 
     def process_verb(self, verb, cmd_list, nouns):
@@ -317,15 +321,16 @@ class Nave(location.SubLocation):
         super().__init__(m)
         self.name = "nave"
         self.verbs["go"] = self
+        self.events.append(drowned_pirates.DrownedPirates())
+        self.event_chance = 100
 
     def enter(self):
         description = (
-            "You walk into the nave, an expansive room made of stone and wood."
+            "You walk into the central nave. The room is in disrepair."
+            " Large cracks have formed on the walls,"
+            "\nand the ocean can be heard through shattered windows."
+            " You notice an entryway behind the altar."
         )
-        description = (
-            "\nThe room is in disrepair. Large cracks have formed on the walls,"
-        )
-        description = "\n and the ocean can be heard through shattered windows."
         announce(description)
 
     def process_verb(self, verb, cmd_list, nouns):
@@ -336,7 +341,7 @@ class Nave(location.SubLocation):
                     config.the_player.next_loc = self.main_location.locations[
                         "vestibule"
                     ]
-                elif cmd_list[1] == "sanctum":
+                elif "sanctum" in cmd_list or "entryway" in cmd_list:
                     config.the_player.next_loc = self.main_location.locations["sanctum"]
 
 
@@ -345,20 +350,55 @@ class Sanctuary(location.SubLocation):
         super().__init__(m)
         self.name = "sanctuary"
         self.verbs["go"] = self
+        self.ladder_unlocked = False
 
     def enter(self):
-        description = "TODO: Sanctuary"
+        description = "You've found the inner sanctuary. "
         announce(description)
+        self.ladder_unlocked = True
 
     def process_verb(self, verb, cmd_list, nouns):
         if verb == "go":
             if len(cmd_list) > 1:
                 config.the_player.go = True
-                if (
-                    cmd_list[1] == "ladder"
-                    or cmd_list[1] == "up"
-                    or cmd_list[1] == "out"
-                ):
+                if cmd_list[1] == "ladder" or cmd_list[1] == "up":
                     config.the_player.next_loc = self.main_location.locations["cliff"]
+                    self.main_location.locations["cliff"].setUnlocked()
                 elif cmd_list[1] == "nave" or cmd_list[1] == "back":
                     config.the_player.next_loc = self.main_location.locations["nave"]
+
+class Cultist(combat.Monster):
+    def __init__ (self, name):
+        attacks = {}
+        attacks["swing"] = ["swings",random.randrange(35,51), (5,10)]
+        attacks["cast"] = ["casts an incantation",random.randrange(10,30), (20,30)]
+        attacks["throw"] = ["throws a piece of rubble",random.randrange(10,20), (30,40)]
+        #7 to 19 hp, bite attack, 65 to 85 speed (100 is "normal")
+        super().__init__(name, random.randrange(7,20), attacks, 75 + random.randrange(-10,11))
+
+class Cultists (event.Event):
+    '''
+    A combat encounter with a group of cultists. 
+    When the event is drawn, creates a combat encounter with 2 to 6 drowned pirates, kicks control over to the combat code to resolve the fight, then adds itself and a simple success message to the result
+    '''
+
+    def __init__ (self):
+        self.name = " cultists"
+
+    def process (self, world):
+        '''Process the event. Based on Drowned Pirate code. The first Cultist becomes a cult leader, buffing its speed and health.'''
+        result = {}
+        result["message"] = "the cultists are defeated!"
+        monsters = []
+        min = 1
+        uplim = 7
+        monsters.append(Cultist("Cult Leader"))
+        monsters[0].speed = 1.2*monsters[0].speed
+        monsters[0].health = 2.5*monsters[0].health
+        n_appearing = random.randrange(min, uplim)
+        for n in range (1, n_appearing + 1):
+            monsters.append(Cultist("Cultist "+str(n)))
+        announce ("You are attacked by a crew of Cultists!")
+        combat.Combat(monsters).combat()
+        result["newevents"] = [ self ]
+        return result
