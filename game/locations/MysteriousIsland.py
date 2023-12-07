@@ -30,10 +30,8 @@ class MysteriousIsland(location.Location):
         self.locations["vestibule"] = Vestibule(self)
         self.locations["sanctuary"] = Sanctuary(self)
 
-    def enter(self, ship):
-        print("You dock at the island.")
-
     def visit(self):
+        print("You arrive at the island.")
         config.the_player.location = self.starting_location
         config.the_player.location.enter()
         super().visit()
@@ -49,7 +47,7 @@ class Beach(location.SubLocation):
 
     def enter(self):
         description = (
-            "You are on the island's beach. Your ship is anchored to the dock."
+            "You are on the island's beach. Your ship is anchored here."
         )
         description += "\nTo your north is a hill. To your west is a forest."
         announce(description)
@@ -78,15 +76,22 @@ class Cliff(location.SubLocation):
     def __init__(self, m):
         super().__init__(m)
         self.name = "cliff"
-        self.verbs["take"] = self
         self.verbs["go"] = self
+        self.verbs["take"] = self
+        self.items = {items.Cutlass, items.BelayingPin}
+
 
     def enter(self):
-        description = "You ascend the hill to the plateau."
+        description = "You ascend the hill to the plateau.\n"
         # description = "Climbing the ladder, "
         description += (
-            "\nMany buildings seem worse for wear, many if not all abandoned."
+            "Many buildings seem worse for wear, many if not all abandoned.\n"
         )
+        if None not in self.items:
+            description += "You see weapons in one of the buildings.\n"
+            for item in self.items:
+                description += f'A {item.name}\n'
+
         announce(description)
 
     def process_verb(self, verb, cmd_list, nouns):
@@ -105,6 +110,16 @@ class Cliff(location.SubLocation):
                     or cmd_list[1] == "north"
                 ):
                     announce("Nothing but open ocean.")
+        if verb == "take":
+            at_least_one = False
+            for key in self.items:
+                if self.items[key] != None and (cmd_list[1] == self.items[key].name or cmd_list[1] == "all"):
+                        announce (f"You take the {self.items[key].name}.")
+                        config.the_player.add_to_inventory([self.items[key]])
+                        config.the_player.go = True
+                        at_least_one = True
+            if not at_least_one:
+                announce("Not a valid item name.")
 
 
 class Ruins(location.SubLocation):
@@ -116,8 +131,8 @@ class Ruins(location.SubLocation):
 
     def enter(self):
         # The description has a base description, followed by variable components.
-        description = "You and your remaining team make their way through the dense foliage. The sunlight beams brightly through a clearing ahead."
-        description += "\n"
+        description = "You and your remaining team make their way through the dense foliage. The sunlight beams brightly through a clearing ahead.\n"
+        description += "You see ruins of a temple. The entrance looks unstable.\n"
 
         # TODO: Add makeshift weapons
 
@@ -350,10 +365,12 @@ class Sanctuary(location.SubLocation):
         super().__init__(m)
         self.name = "sanctuary"
         self.verbs["go"] = self
+        self.verbs["take"] = self
         self.ladder_unlocked = False
+        self.food_left = True
 
     def enter(self):
-        description = "You've found the inner sanctuary. "
+        description = "You've found the inner sanctuary. There is a ladder leading out of this area."
         announce(description)
         self.ladder_unlocked = True
 
@@ -366,6 +383,28 @@ class Sanctuary(location.SubLocation):
                     self.main_location.locations["cliff"].setUnlocked()
                 elif cmd_list[1] == "nave" or cmd_list[1] == "back":
                     config.the_player.next_loc = self.main_location.locations["nave"]
+        if verb == "take":
+            #Items to take:
+            if 'food' in cmd_list:
+                if self.food_left:
+                    config.the_player.ship.food += 15
+                    self.food_left = False
+
+            at_least_one = False
+            for key in self.items:
+                if self.items[key] != None and (cmd_list[1] == self.items[key].name or cmd_list[1] == "all"):
+                        announce (f"You take the {self.items[key].name}.")
+                        config.the_player.add_to_inventory([self.items[key]])
+                        config.the_player.go = True
+                        at_least_one = True
+            if not at_least_one:
+                announce("Not a valid item name.")
+
+
+
+            # cutlass
+
+
 
 class Cultist(combat.Monster):
     def __init__ (self, name):
@@ -378,17 +417,18 @@ class Cultist(combat.Monster):
 
 class Cultists (event.Event):
     '''
-    A combat encounter with a group of cultists. 
-    When the event is drawn, creates a combat encounter with 2 to 6 drowned pirates, kicks control over to the combat code to resolve the fight, then adds itself and a simple success message to the result
+    A combat encounter with a group of cultists. Based on drowned pirate code.
+    When the event is drawn, creates a combat encounter with 2 to 8 cultists. kicks control over to the combat code to resolve the fight,
+    then adds itself and a simple success message to the result.
     '''
 
     def __init__ (self):
         self.name = " cultists"
 
     def process (self, world):
-        '''Process the event. Based on Drowned Pirate code. The first Cultist becomes a cult leader, buffing its speed and health.'''
+        '''Process the event. The first Cultist becomes a cult leader, buffing its speed and health.'''
         result = {}
-        result["message"] = "the cultists are defeated!"
+        result["message"] = "The cultists are defeated!"
         monsters = []
         min = 1
         uplim = 7
@@ -397,7 +437,7 @@ class Cultists (event.Event):
         monsters[0].health = 2.5*monsters[0].health
         n_appearing = random.randrange(min, uplim)
         for n in range (1, n_appearing + 1):
-            monsters.append(Cultist("Cultist "+str(n)))
+            monsters.append(Cultist("Cultist " + str(n)))
         announce ("You are attacked by a crew of Cultists!")
         combat.Combat(monsters).combat()
         result["newevents"] = [ self ]
