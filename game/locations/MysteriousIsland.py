@@ -127,7 +127,6 @@ class Ruins(location.SubLocation):
         super().__init__(m)
         self.name = "ruins"
         self.verbs["go"] = self
-        # self.verbs['take'] = self
 
     def enter(self):
         # The description has a base description, followed by variable components.
@@ -155,34 +154,8 @@ class Ruins(location.SubLocation):
                         "The foliage in that direction is too thick to cut through."
                     )
 
-        # Handle taking items. Demo both "take cutlass" and "take all"
-        if verb == "take":
-            if self.item_in_tree == None and self.item_in_clothes == None:
-                announce("You don't see anything to take.")
-            elif len(cmd_list) > 1:
-                at_least_one = (
-                    False  # Track if you pick up an item, print message if not.
-                )
-                item = self.item_in_tree
-                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
-                    announce("You take the " + item.name + " from the tree.")
-                    config.the_player.add_to_inventory([item])
-                    self.item_in_tree = None
-                    config.the_player.go = True
-                    at_least_one = True
-                item = self.item_in_clothes
-                if item != None and (cmd_list[1] == item.name or cmd_list[1] == "all"):
-                    announce(
-                        "You pick up the "
-                        + item.name
-                        + " out of the pile of clothes. ...It looks like someone was eaten here."
-                    )
-                    config.the_player.add_to_inventory([item])
-                    self.item_in_clothes = None
-                    config.the_player.go = True
-                    at_least_one = True
-                if at_least_one == False:
-                    announce("You don't see one of those around.")
+        else:
+            announce("Invalid command.")
 
 
 class Temple_Entrance(location.SubLocation):

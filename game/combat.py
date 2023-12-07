@@ -10,6 +10,8 @@ class Combat():
 
     def __init__ (self, monsters):
         self.monsters = monsters
+    def get_monsters(self):
+        return self.monsters
 
     def process_verb (self, verb, cmd_list, nouns):
         print (self.nouns + " can't " + verb)
@@ -55,6 +57,7 @@ class Combat():
             config.the_player.cleanup_items()
 
 
+
 class Monster(superclasses.CombatCritter):
     def __init__ (self, name: str, hp: int, attacks: dict[str, list], speed: float):
         super().__init__(name, hp, speed)
@@ -67,7 +70,7 @@ class Monster(superclasses.CombatCritter):
             attack = superclasses.Attack(key, self.attacks[key][0], self.attacks[key][1], self.attacks[key][2], False)
             attacks.append(superclasses.CombatAction(attack.name, attack, self))
         return attacks
-
+ 
     def pickAction(self):
         attacks = self.getAttacks()
         return random.choice(attacks)
@@ -87,3 +90,22 @@ class Drowned(Monster):
         attacks["punch 2"] = ["punches",random.randrange(35,51), (1,10)]
         #7 to 19 hp, bite attack, 65 to 85 speed (100 is "normal")
         super().__init__(name, random.randrange(7,20), attacks, 75 + random.randrange(-10,11))
+
+
+class Macaque(Monster):
+    def __init__(self, name):
+        attacks = {"bite": ["bites", 10, (1, 5)]}
+        super().__init__(name, 10, attacks, 70 +random.randrange(-10,11))
+
+
+class Guardian(Monster):
+    def __init__(self, name):
+        attacks = {"slam": ["slams", 15, (2, 8)]}
+        super().__init__(name, 50, attacks, 70 +random.randrange(-10,11))
+
+
+class Keeper(Monster):
+    def __init__(self, name):
+        attacks = {"strike": ["strikes", 20, (3, 10)]}
+        super().__init__(name, 500, attacks, 70 +random.randrange(-10,11))
+
