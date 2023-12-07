@@ -23,7 +23,7 @@ class ManEatingMonkeys (event.Event):
         n_appearing = random.randrange(4,8)
         n = 1
         while n <= n_appearing:
-            monsters.append(Macaque("Man-eating Macaque "+str(n)))
+            monsters.append(Macaque("A group of Macaques "+str(n)))
             n += 1
         announce ("The crew is attacked by a troop of man-eating macaques!")
         Combat(monsters).combat()
