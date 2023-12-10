@@ -51,8 +51,7 @@ class World (context.Context):
         self.locs[self.startx+1][self.starty] = whirl
 
         #Test island: always start off next to a test island. Swap in your island to test yours.
-        testland = MysteriousIsland.MysteriousIsland (self.startx, self.starty+1, self)
-        #Dylan: testland = dylanisland.Dylan (self.startx, self.starty+1, self)
+        testland = island.Island (self.startx, self.starty+1, self)
         self.locs[self.startx][self.starty+1] = testland
 
         # Peaceful island directly to the right of the spawning location.
